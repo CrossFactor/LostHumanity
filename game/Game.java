@@ -3,6 +3,10 @@ package game;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 
+import game.states.Battle;
+import game.states.Menu;
+import game.states.Play;
+
 public class Game extends StateBasedGame {
 	
 	public static final String gamename = "Lost Humanity";

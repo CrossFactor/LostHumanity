@@ -6,37 +6,36 @@ import java.util.Random;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.Music;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
-
-import game.Attack;
 import game.characters.*;
+import game.util.Hitbox;
 
-public abstract class Hero extends GameCharacter {
+public abstract class Hero extends BattleCharacter {
 	private Animation movingUp, movingDown, movingLeft, movingRight, idleUp, idleDown, idleLeft, idleRight;
-	Boolean isMoving;
+	private Boolean isMoving;
+	private static final float DEFAULT_X = 400;
+	private static final float DEFAULT_Y = 300;
 	private int widthOut = 45;
 	private int heightOut = 80;
-	private int widthBattle = 180;
-	private int heightBattle = 170;
 	private float xPosOut = 376;
 	private float yPosOut = 3;
 	private int direction = 0;
 
-	public Hero(String name, int hp) {
-		super(name, hp);
-	}
-	
-	public void reset() {
-		setxPosBattle(400);
-		setyPosBattle(400);
+	public Hero(String name, int hp, int damage) {
+		super(name, hp, damage, 300, 200);
 	}
 
+	public void reset() {
+		setxPosBattle(DEFAULT_X);
+		setyPosBattle(DEFAULT_Y);
+	}
+	
+	//controls for hero outside combat
 	public void moveOut(GameContainer gc, StateBasedGame sbg, int delta, Input input, Image worldMapWalls) { // 0
 																												// up
 																												// 1
@@ -108,37 +107,48 @@ public abstract class Hero extends GameCharacter {
 			}
 		}
 	}
-
+	
+	//generates random number to find battle while moving
 	public void findBattle(Music music, StateBasedGame sbg) {
 		if (isMoving == true) {
-			int battle = (new Random()).nextInt(6999) + 1;
+			int battle = (new Random()).nextInt(5999) + 1;
 			if (battle == 6) {
 				music.stop();
 				sbg.enterState(2);
 			}
 		}
 	}
-
-	public void moveBattle(GameContainer gc, StateBasedGame sbg, int delta, Input input) {
-		Boolean isMoving = false; // 0 up 1 down 2 left 3 right
+	
+	//this is for hero control during battle
+	public void battle(GameContainer gc, StateBasedGame sbg, int delta) {
 		// Sound.bg.loop();
+		Input input = gc.getInput();
 		getAnimation().start();
 		getAnimation().update(delta);
-		
+		battleInput(gc, sbg, delta, input);
+	}
+	
+	//controls for hero during battle
+	public void battleInput(GameContainer gc, StateBasedGame sbg, int delta, Input input) {
+		Boolean isMoving = false; // 0 up 1 down 2 left 3 right
+		if (input.isKeyDown(Input.KEY_M)) {
+			sbg.enterState(1);
+		}
 		if (input.isKeyPressed(Input.KEY_K)) {
 			startAttack(); // sets isAttacking() to true
 		}
-		
+
 		if (getAnimation().getCurrentFrame() == attackLeft.getImage(4)
 				|| getAnimation().getCurrentFrame() == attackRight.getImage(4)) {
 			stopAttack(); // sets isAttacking() to false
 			if (direction == 2) {
+				
 				battleFaceLeft();
 			} else {
 				battleFaceRight();
 			}
 		}
-		
+
 		if (isAttacking() == true) {
 			if (direction == 2) {
 				attackLeft();
@@ -146,18 +156,17 @@ public abstract class Hero extends GameCharacter {
 				attackRight();
 			}
 
-		} else if (isAttacking() == false) { // Movement. Can only move is is
-												// not attacking
+		} else if (isAttacking() == false) { // Movement. Can only move is is not attacking
 			if (input.isKeyDown(Input.KEY_A)) {
 				battleMoveLeft();
-				setxPosBattle(getxPosBattle() - delta * .175f);
+				setxPosBattle(getxPosBattle() - delta * .2f);
 				isMoving = true;
 				direction = 2;
 			}
 
 			else if (input.isKeyDown(Input.KEY_D)) {
 				battleMoveRight();
-				setxPosBattle(getxPosBattle() + delta * .175f);
+				setxPosBattle(getxPosBattle() + delta * .2f);
 				isMoving = true;
 				direction = 3;
 			}
@@ -226,7 +235,6 @@ public abstract class Hero extends GameCharacter {
 		this.idleLeft = new Animation(idleLeft, 450, false);
 		this.idleRight = new Animation(idleRight, 450, false);
 		super.setSpriteSheets(idle, attack, battleMove);
-
 	}
 
 	public float getxPosOut() {
@@ -261,27 +269,20 @@ public abstract class Hero extends GameCharacter {
 		this.heightOut = heightOut;
 	}
 
-	public int getWidthBattle() {
-		return widthBattle;
-	}
-
-	public void setWidthBattle(int widthBattle) {
-		this.widthBattle = widthBattle;
-	}
-
-	public int getHeightBattle() {
-		return heightBattle;
-	}
-
-	public void setHeightBattle(int heightBattle) {
-		this.heightBattle = heightBattle;
-	}
-
 	public Rectangle hitBoxOut() {
 		return new Rectangle(getxPosOut(), getyPosOut(), getWidthOut(), getHeightOut());
 	}
 
-	public Rectangle hitBoxBattle() {
-		return null;
+	public void face(int direction) {
+		switch (direction) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		}
 	}
 }

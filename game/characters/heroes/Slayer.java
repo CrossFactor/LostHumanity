@@ -5,14 +5,16 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import org.lwjgl.opengl.GLContext;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.state.StateBasedGame;
 
 public class Slayer extends Hero {
 	public static final Slayer slayer = new Slayer();
 	SpriteSheet moveUp, moveDown, moveRight, idleLeft, idleRight, attackLeft, attackRight;
-
 	public Slayer() {
-		super("slayer", 100);
+		super("slayer", 100, 25);
 		/*try {
 			File file = new File("bin\\res\\slayer\\out\\moveUp.png");
 			if (file.exists()) 
