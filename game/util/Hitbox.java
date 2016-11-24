@@ -1,15 +1,17 @@
 package game.util;
 
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Color;
+
 public class Hitbox {
 	private float x, y, width, height;
-	private Boolean canDamage;
 
-	public Hitbox(float x, float y, float width, float height , Boolean canDamage) {
+	public Hitbox(float x, float y, float width, float height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.setCanDamage(canDamage);
 	}
 
 	public float getCenterX() {
@@ -17,7 +19,7 @@ public class Hitbox {
 	}
 
 	public float getCenterY() {
-		return x + (height / 2.0f);
+		return y + (height / 2.0f);
 	}
 
 	public void resize(float width, float height) {
@@ -25,16 +27,14 @@ public class Hitbox {
 		this.height = height;
 	}
 
-	public void repos(float x, float y) {
+
+	public void draw(Graphics g) {
+		g.setColor(Color.red);
+		g.drawRect(x, y, width, height);
+	}
+
+	public void update(float x, float y) {
 		this.x = x;
 		this.y = y;
-	}
-
-	public Boolean getCanDamage() {
-		return canDamage;
-	}
-
-	public void setCanDamage(Boolean canDamage) {
-		this.canDamage = canDamage;
 	}
 }

@@ -58,7 +58,7 @@ public class Healthbar{
 	
 	public void draw(Graphics g) throws SlickException {
 		  g.setColor(Color.red);
-		  g.drawRect(x, y, maxHealth, 15);
+		  g.fillRect(x - 1, y - 1, maxHealth + 2, 15 + 1);
 		  g.setColor(Color.green);
 		  g.fillRect(x, y, currentHealth, 14);
 	   }

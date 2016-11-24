@@ -12,25 +12,21 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.state.StateBasedGame;
 
-public class Teru extends Monster {
-	public Teru() throws SlickException {
-		super("Teru", 150, 150, 100, 80);
-//		SpriteSheet idleLeft = new SpriteSheet("res/monsters/teru/idle/idleLeft.png", 300, 200);
-//		SpriteSheet idleRight = new SpriteSheet("res/monsters/teru/idle/idleRight.png", 300, 200);
-//		SpriteSheet attackLeft = new SpriteSheet("res/monsters/teru/attackMelee/attackMeleeLeft.png", 300, 200);
-//		SpriteSheet attackRight = new SpriteSheet("res/monsters/teru/attackMelee/attackMeleeRight.png", 300, 200);
-//		SpriteSheet battleMoveLeft = new SpriteSheet("res/monsters/teru/move/moveLeft.png", 300, 200);
-//		SpriteSheet battleMoveRight = new SpriteSheet("res/monsters/teru/move/moveRight.png", 300, 200);
-//		List<SpriteSheet> idle = new ArrayList<SpriteSheet>();
-//		List<SpriteSheet> attack = new ArrayList<SpriteSheet>();
-//		List<SpriteSheet> battleMove = new ArrayList<SpriteSheet>();
-//		idle.add(idleLeft);
-//		idle.add(idleRight);
-//		attack.add(attackLeft);
-//		attack.add(attackRight);
-//		battleMove.add(battleMoveLeft);
-//		battleMove.add(battleMoveRight);
-//		setSpriteSheets(idle, attack, battleMove);
+import game.characters.BattleCharacterInfo;
 
+public class Teru extends Monster {
+	/*
+	 * hp = 80
+	 * damage = 10
+	 * widthBattle = 100
+	 * heightBattle = 80
+	 * hitboxWidth = 20
+	 * hitboxHeight = 55
+	 * distanceFromTop = 4
+	 * hurtboxWidth = ?
+	 * gapFromCenter = ?
+	 */
+	public Teru() throws SlickException {
+		super(new BattleCharacterInfo("Teru", 80, 10, 100, 80, 20, 55, 4, 10, 0, 10));
 	}
 }

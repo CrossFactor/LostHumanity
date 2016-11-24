@@ -55,38 +55,18 @@ public class Play extends BasicGameState {
 		// sound.stop();
 		// Songs.playBgm.stop();
 	}
-	
-	public void setHeroSprites() throws SlickException{
-		SpriteSheet moveUp = new SpriteSheet("res/" + job + "/out/moveUp.png", 45, 80);
-	SpriteSheet moveDown = new SpriteSheet("res/" + job + "/out/moveDown.png", 45, 80);
-	SpriteSheet moveLeft = new SpriteSheet("res/" + job + "/out/moveLeft.png", 45, 80);
-	SpriteSheet moveRight = new SpriteSheet("res/" + job + "/out/moveRight.png", 45, 80);
-	SpriteSheet idleLeft = new SpriteSheet("res/" + job + "/attack/idleLeft.png", 300, 200);
-	SpriteSheet idleRight = new SpriteSheet("res/" + job + "/attack/idleRight.png", 300, 200);
-	SpriteSheet attackLeft = new SpriteSheet("res/" + job + "/attack/attackLeft.png", 300, 200);
-	SpriteSheet attackRight = new SpriteSheet("res/" + job + "/attack/attackRight.png", 300, 200);
-	SpriteSheet battleMoveLeft = new SpriteSheet("res/" + job + "/attack/moveLeft.png", 300, 200);
-	SpriteSheet battleMoveRight = new SpriteSheet("res/" + job + "/attack/moveRight.png", 300, 200);
-	List<SpriteSheet> move = new ArrayList<SpriteSheet>();
-	List<SpriteSheet> idle = new ArrayList<SpriteSheet>();
-	List<SpriteSheet> attack = new ArrayList<SpriteSheet>();
-	List<SpriteSheet> battleMove = new ArrayList<SpriteSheet>();
-	move.add(moveUp);
-	move.add(moveDown);
-	move.add(moveLeft);
-	move.add(moveRight);
-	idle.add(idleLeft);
-	idle.add(idleRight);
-	attack.add(attackLeft);
-	attack.add(attackRight);
-	battleMove.add(battleMoveLeft);
-	battleMove.add(battleMoveRight);
-	hero.setSpriteSheets(move, idle, attack, battleMove);
-	}
-	
+
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {// tiledmap
 		music = new Music("sounds/one/bgm1.wav");
-		setHeroSprites();
+		if(hero instanceof Slayer){
+			((Slayer) hero).setHeroSprites();	
+		}
+		else if(hero instanceof Slayer){
+			((Slayer) hero).setHeroSprites();
+		}
+		else if(hero instanceof Slayer){
+			((Slayer) hero).setHeroSprites();
+		}
 		worldMap = new Image("res/backgrounds/whole map/floor.png");
 		worldMapWalls = new Image("res/backgrounds/whole map/walls.png");
 		hero.faceDown();
@@ -121,15 +101,15 @@ public class Play extends BasicGameState {
 		case 1:
 			mapX = 0;
 			mapY = 0;
-			if (hero.getyPosOut() >= 457 && (hero.getxPosOut() >  368 && hero.getxPosOut() <  382)) {
-				area++;
-				hero.setyPosOut(6);
-			}
+			/*
+			 * if (hero.getyPosOut() >= 457 && (hero.getxPosOut() > 368 &&
+			 * hero.getxPosOut() < 382)) { area++; hero.setyPosOut(6); }
+			 */
 			break;
 		case 2:
 			mapX = 0;
 			mapY = -600;
-			if (hero.getxPosOut() >=  692 && (hero.getyPosOut() >  215 && hero.getyPosOut() <  235)) {
+			if (hero.getxPosOut() >= 692 && (hero.getyPosOut() > 215 && hero.getyPosOut() < 235)) {
 				area++;
 				hero.setxPosOut(64);
 			}
@@ -137,7 +117,7 @@ public class Play extends BasicGameState {
 		case 3:
 			mapX = -800;
 			mapY = -600;
-			if (hero.getyPosOut() >= 457 && (hero.getxPosOut() >  368 && hero.getxPosOut() <  382)) {
+			if (hero.getyPosOut() >= 457 && (hero.getxPosOut() > 368 && hero.getxPosOut() < 382)) {
 				area++;
 				hero.setyPosOut(6);
 			}

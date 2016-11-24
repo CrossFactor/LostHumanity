@@ -6,6 +6,7 @@ import org.newdawn.slick.state.*;
 import game.states.Battle;
 import game.states.Menu;
 import game.states.Play;
+import game.util.Debug;
 
 public class Game extends StateBasedGame {
 	
@@ -17,6 +18,7 @@ public class Game extends StateBasedGame {
 	
 	public Game(String gamename){
 		super(gamename);
+		Debug.debugMode(true);
 		this.addState(new Menu(menu)); //States are the different states of the game. Menu for main menu
 		this.addState(new Play(play)); // we have play for game proper
 		this.addState(new Battle(battle));

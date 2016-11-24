@@ -13,11 +13,15 @@ import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 import game.characters.*;
+import game.util.AttackCooldown;
+import game.util.BattleController;
 import game.util.Hitbox;
+import game.util.SpriteSheetLists;
 
 public abstract class Hero extends BattleCharacter {
 	private Animation movingUp, movingDown, movingLeft, movingRight, idleUp, idleDown, idleLeft, idleRight;
 	private Boolean isMoving;
+	private Boolean attackPressed = false;
 	private static final float DEFAULT_X = 400;
 	private static final float DEFAULT_Y = 300;
 	private int widthOut = 45;
@@ -25,17 +29,18 @@ public abstract class Hero extends BattleCharacter {
 	private float xPosOut = 376;
 	private float yPosOut = 3;
 	private int direction = 0;
+	private float hurtboxX;
 
-	public Hero(String name, int hp, int damage) {
-		super(name, hp, damage, 300, 200);
+	public Hero(BattleCharacterInfo info) {
+		super(info);
 	}
 
 	public void reset() {
 		setxPosBattle(DEFAULT_X);
 		setyPosBattle(DEFAULT_Y);
 	}
-	
-	//controls for hero outside combat
+
+	// controls for hero outside combat
 	public void moveOut(GameContainer gc, StateBasedGame sbg, int delta, Input input, Image worldMapWalls) { // 0
 																												// up
 																												// 1
@@ -107,8 +112,8 @@ public abstract class Hero extends BattleCharacter {
 			}
 		}
 	}
-	
-	//generates random number to find battle while moving
+
+	// generates random number to find battle while moving
 	public void findBattle(Music music, StateBasedGame sbg) {
 		if (isMoving == true) {
 			int battle = (new Random()).nextInt(5999) + 1;
@@ -118,8 +123,8 @@ public abstract class Hero extends BattleCharacter {
 			}
 		}
 	}
-	
-	//this is for hero control during battle
+
+	// this is for hero control during battle
 	public void battle(GameContainer gc, StateBasedGame sbg, int delta) {
 		// Sound.bg.loop();
 		Input input = gc.getInput();
@@ -127,26 +132,47 @@ public abstract class Hero extends BattleCharacter {
 		getAnimation().update(delta);
 		battleInput(gc, sbg, delta, input);
 	}
-	
-	//controls for hero during battle
+
+	// controls for hero during battle
 	public void battleInput(GameContainer gc, StateBasedGame sbg, int delta, Input input) {
 		Boolean isMoving = false; // 0 up 1 down 2 left 3 right
+		Boolean spawnHurtbox = false;
+		// sends player back to menu TEMPORARY
 		if (input.isKeyDown(Input.KEY_M)) {
 			sbg.enterState(1);
 		}
-		if (input.isKeyPressed(Input.KEY_K)) {
-			startAttack(); // sets isAttacking() to true
-		}
 
+		// stops attack animation at last frame
 		if (getAnimation().getCurrentFrame() == attackLeft.getImage(4)
 				|| getAnimation().getCurrentFrame() == attackRight.getImage(4)) {
-			stopAttack(); // sets isAttacking() to false
+			stopAttack(); // sets isAttacking() to false after a few seconds of
+							// cooldown
 			if (direction == 2) {
-				
 				battleFaceLeft();
 			} else {
 				battleFaceRight();
 			}
+		}
+
+		// spawns hurtbox at certain frame
+		if (getAnimation().getCurrentFrame() == attackLeft.getImage(2)
+				|| getAnimation().getCurrentFrame() == attackRight.getImage(2)
+				|| getAnimation().getCurrentFrame() == attackLeft.getImage(3)
+				|| getAnimation().getCurrentFrame() == attackRight.getImage(3)) {
+			spawnHurtbox = true;
+		}
+		// makes hitbox only if attacking
+		if (spawnHurtbox == true) {
+			if (direction == 2) {
+				setHurtboxX(getCenterX() - info.getHurtboxWidth() - info.getGapFromCenter());
+				setHurtbox(new Hitbox(hurtboxX, getyPosBattle() + 30, info.getHurtboxWidth(),
+						info.getHeightBattle() - 30));
+			} else {
+				setHurtboxX(getCenterX() + info.getGapFromCenter());
+				setHurtbox(new Hitbox(hurtboxX, getyPosBattle() + 30, info.getHurtboxWidth(),
+						info.getHeightBattle() - 30));
+			}
+			spawnHurtbox = false;
 		}
 
 		if (isAttacking() == true) {
@@ -155,8 +181,16 @@ public abstract class Hero extends BattleCharacter {
 			} else {
 				attackRight();
 			}
+		} else if (isAttacking() == false && isHit() == false && isOnCooldown() == false) { // Movement.
+			// Can only
+			// move if
+			// is
+			// not attacking and not hit
 
-		} else if (isAttacking() == false) { // Movement. Can only move is is not attacking
+			if (input.isKeyDown(Input.KEY_K)) {
+				startAttack(); // sets isAttacking() to true
+			}
+
 			if (input.isKeyDown(Input.KEY_A)) {
 				battleMoveLeft();
 				setxPosBattle(getxPosBattle() - delta * .2f);
@@ -184,6 +218,7 @@ public abstract class Hero extends BattleCharacter {
 		}
 	}
 
+	// functionality
 	public void moveUp() {
 		setAnimation(movingUp);
 	}
@@ -216,6 +251,20 @@ public abstract class Hero extends BattleCharacter {
 		setAnimation(idleRight);
 	}
 
+	public void face(int direction) {
+		switch (direction) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		}
+	}
+
+	// getters and setters
 	public void setSpriteSheets(List<SpriteSheet> move, List<SpriteSheet> idle, List<SpriteSheet> attack,
 			List<SpriteSheet> battleMove) {
 		this.movingUp = new Animation(move.get(0), 450);
@@ -269,20 +318,11 @@ public abstract class Hero extends BattleCharacter {
 		this.heightOut = heightOut;
 	}
 
-	public Rectangle hitBoxOut() {
-		return new Rectangle(getxPosOut(), getyPosOut(), getWidthOut(), getHeightOut());
+	public float getHurtboxX() {
+		return hurtboxX;
 	}
 
-	public void face(int direction) {
-		switch (direction) {
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
-		}
+	public void setHurtboxX(float hurtboxX) {
+		this.hurtboxX = hurtboxX;
 	}
 }
