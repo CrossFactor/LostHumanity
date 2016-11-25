@@ -10,4 +10,4 @@ ENTER to choose from menu navigation
 M to go back to navigation in battle mode
 E after ESC in navigation to force battle mode
 
-JAR FILE DOWNLOAD: https://www.mediafire.com/?1sewgm89bg8u781
+JAR FILE DOWNLOAD: http://www.mediafire.com/file/q7oa5me5zpiv3ir/LH.jar
