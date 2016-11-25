@@ -25,7 +25,7 @@ public class Healthbar{
 	}
 	
 	public void setX(float x){
-		this.x = (x + (charWidth / 3.0f));
+		this.x = x;
 	}
 	
 	public float getCenterX() {
@@ -37,7 +37,7 @@ public class Healthbar{
 	}
 
 	public void setY(float y){
-		this.y = y - 2;
+		this.y = y;
 	}
 	
 	public void setMaxHp(int maxHealth) { //the variable name refers to the characters max hp, variable name may vary

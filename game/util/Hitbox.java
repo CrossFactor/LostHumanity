@@ -1,11 +1,12 @@
 package game.util;
 
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.Color;
 
 public class Hitbox {
 	private float x, y, width, height;
+	private Boolean canDamage = false;
 
 	public Hitbox(float x, float y, float width, float height) {
 		this.x = x;
@@ -36,5 +37,15 @@ public class Hitbox {
 	public void update(float x, float y) {
 		this.x = x;
 		this.y = y;
+	}
+	
+	public Rectangle getBounds(){ return new Rectangle(x, y, width, height);}
+
+	public Boolean getCanDamage() {
+		return canDamage;
+	}
+
+	public void setCanDamage(Boolean canDamage) {
+		this.canDamage = canDamage;
 	}
 }

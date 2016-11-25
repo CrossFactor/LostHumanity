@@ -18,14 +18,10 @@ public class BattleController extends JPanel implements Runnable {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				racquet.keyReleased(e);
-				racquet2.keyReleased(e);
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				racquet.keyPressed(e);
-				racquet2.keyPressed(e);
 			}
 		});
 		setFocusable(true);

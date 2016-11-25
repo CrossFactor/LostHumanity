@@ -2,7 +2,6 @@ package game.states;
 
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
-import org.lwjgl.input.Mouse;
 
 public class Menu extends BasicGameState {
 

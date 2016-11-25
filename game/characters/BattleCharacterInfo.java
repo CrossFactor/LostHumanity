@@ -11,13 +11,18 @@ public class BattleCharacterInfo {
 		// private int hitboxWidth = 30;
 		// private int hitboxHeight = 65;
 	private String name;
-	private int hp, damage, widthBattle, heightBattle, hitboxWidth, hitboxHeight, distanceFromTop;
+	private int maxHp, damage, widthBattle, heightBattle, hitboxWidth, hitboxHeight, distanceFromTop;
 	private float hurtboxWidth, gapFromCenter;
-	private int aggression;
+	private int healthBarDistance, aggression;
+	private float moveSpeed;
+	private int currentHp, attackRangeBox;
+	private float distanceFromTopAttack;
+	private int indexLastFrame, indexStartAttackFrame, indexEndAttackFrame;
 	public BattleCharacterInfo(String name, int hp, int damage, int widthBattle, int heightBattle, int hitboxWidth, int hitboxHeight, 
-			int distanceFromTop, float hurtboxWidth, float gapFromCenter, int aggression){
+			int distanceFromTop, float hurtboxWidth, float gapFromCenter, int healthBarDistance, int aggression, float moveSpeed, float distanceFromTopAttack,
+			int indexLastFrame, int indexStartAttackFrame, int indexEndAttackFrame){
 		setName(name);
-		setHp(hp);
+		setMaxHp(hp);
 		setDamage(damage);
 		setWidthBattle(widthBattle);
 		setHeightBattle(heightBattle);
@@ -26,16 +31,17 @@ public class BattleCharacterInfo {
 		setHurtboxWidth(hurtboxWidth);
 		setGapFromCenter(gapFromCenter);
 		setDistanceFromTop(distanceFromTop);
-		setAggression(aggression * 20);
-		
+		setHealthBarDistance(healthBarDistance);
+		setAggression(aggression * 17);
+		setAttackRangeBox(aggression * 15);
+		setCurrentHp(hp);
+		setMoveSpeed(moveSpeed);
+		setDistanceFromTopAttack(distanceFromTopAttack);
+		setIndexLastFrame(indexLastFrame);
+		setIndexStartAttackFrame(indexStartAttackFrame);
+		setIndexEndAttackFrame(indexEndAttackFrame);
 	}
 	
-	public int getHp() {
-		return hp;
-	}
-	public void setHp(int hp) {
-		this.hp = hp;
-	}
 	public int getDamage() {
 		return damage;
 	}
@@ -101,6 +107,78 @@ public class BattleCharacterInfo {
 
 	public void setAggression(int aggression) {
 		this.aggression = aggression;
+	}
+
+	public int getHealthBarDistance() {
+		return healthBarDistance;
+	}
+
+	public void setHealthBarDistance(int healthBarDistance) {
+		this.healthBarDistance = healthBarDistance;
+	}
+
+	public int getMaxHp() {
+		return maxHp;
+	}
+
+	public void setMaxHp(int maxHp) {
+		this.maxHp = maxHp;
+	}
+
+	public int getCurrentHp() {
+		return currentHp;
+	}
+
+	public void setCurrentHp(int currentHp) {
+		this.currentHp = currentHp;
+	}
+
+	public float getMoveSpeed() {
+		return moveSpeed;
+	}
+
+	public void setMoveSpeed(float moveSpeed2) {
+		this.moveSpeed = moveSpeed2;
+	}
+
+	public int getAttackRangeBox() {
+		return attackRangeBox;
+	}
+
+	public void setAttackRangeBox(int attackRangeBox) {
+		this.attackRangeBox = attackRangeBox;
+	}
+
+	public float getDistanceFromTopAttack() {
+		return distanceFromTopAttack;
+	}
+
+	public void setDistanceFromTopAttack(float distanceFromTopAttack) {
+		this.distanceFromTopAttack = distanceFromTopAttack;
+	}
+
+	public int getIndexLastFrame() {
+		return indexLastFrame;
+	}
+
+	public void setIndexLastFrame(int indexLastFrame) {
+		this.indexLastFrame = indexLastFrame;
+	}
+
+	public int getIndexEndAttackFrame() {
+		return indexEndAttackFrame;
+	}
+
+	public void setIndexEndAttackFrame(int indexEndAttackFrame) {
+		this.indexEndAttackFrame = indexEndAttackFrame;
+	}
+
+	public int getIndexStartAttackFrame() {
+		return indexStartAttackFrame;
+	}
+
+	public void setIndexStartAttackFrame(int indexStartAttackFrame) {
+		this.indexStartAttackFrame = indexStartAttackFrame;
 	}
 	
 }

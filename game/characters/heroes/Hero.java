@@ -9,19 +9,15 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.Music;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
-import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 import game.characters.*;
-import game.util.AttackCooldown;
-import game.util.BattleController;
-import game.util.Hitbox;
-import game.util.SpriteSheetLists;
+import game.util.Debug;
 
 public abstract class Hero extends BattleCharacter {
 	private Animation movingUp, movingDown, movingLeft, movingRight, idleUp, idleDown, idleLeft, idleRight;
 	private Boolean isMoving;
-	private Boolean attackPressed = false;
 	private static final float DEFAULT_X = 400;
 	private static final float DEFAULT_Y = 300;
 	private int widthOut = 45;
@@ -29,7 +25,6 @@ public abstract class Hero extends BattleCharacter {
 	private float xPosOut = 376;
 	private float yPosOut = 3;
 	private int direction = 0;
-	private float hurtboxX;
 
 	public Hero(BattleCharacterInfo info) {
 		super(info);
@@ -136,84 +131,59 @@ public abstract class Hero extends BattleCharacter {
 	// controls for hero during battle
 	public void battleInput(GameContainer gc, StateBasedGame sbg, int delta, Input input) {
 		Boolean isMoving = false; // 0 up 1 down 2 left 3 right
-		Boolean spawnHurtbox = false;
 		// sends player back to menu TEMPORARY
-		if (input.isKeyDown(Input.KEY_M)) {
-			sbg.enterState(1);
+		if (Debug.debugMode == true) {
+			if (input.isKeyDown(Input.KEY_M)) {
+				sbg.enterState(1);
+			}
+			if (input.isKeyDown(Input.KEY_4))
+				;
 		}
-
+		// despawns hitbox after end attack frame
+		if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexEndAttackFrame())
+				|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexEndAttackFrame())) {
+			setHurtbox(null);
+		}
 		// stops attack animation at last frame
-		if (getAnimation().getCurrentFrame() == attackLeft.getImage(4)
-				|| getAnimation().getCurrentFrame() == attackRight.getImage(4)) {
-			stopAttack(); // sets isAttacking() to false after a few seconds of
-							// cooldown
-			if (direction == 2) {
-				battleFaceLeft();
-			} else {
-				battleFaceRight();
-			}
-		}
-
-		// spawns hurtbox at certain frame
-		if (getAnimation().getCurrentFrame() == attackLeft.getImage(2)
-				|| getAnimation().getCurrentFrame() == attackRight.getImage(2)
-				|| getAnimation().getCurrentFrame() == attackLeft.getImage(3)
-				|| getAnimation().getCurrentFrame() == attackRight.getImage(3)) {
-			spawnHurtbox = true;
-		}
-		// makes hitbox only if attacking
-		if (spawnHurtbox == true) {
-			if (direction == 2) {
-				setHurtboxX(getCenterX() - info.getHurtboxWidth() - info.getGapFromCenter());
-				setHurtbox(new Hitbox(hurtboxX, getyPosBattle() + 30, info.getHurtboxWidth(),
-						info.getHeightBattle() - 30));
-			} else {
-				setHurtboxX(getCenterX() + info.getGapFromCenter());
-				setHurtbox(new Hitbox(hurtboxX, getyPosBattle() + 30, info.getHurtboxWidth(),
-						info.getHeightBattle() - 30));
-			}
-			spawnHurtbox = false;
-		}
-
-		if (isAttacking() == true) {
-			if (direction == 2) {
+		if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexLastFrame())
+				|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexLastFrame())) {
+			stopAttack(); // sets isAttacking() to false
+		} else if (isAttacking() == true) {
+			if (getBattleDirection() == 1) {
 				attackLeft();
 			} else {
 				attackRight();
 			}
-		} else if (isAttacking() == false && isHit() == false && isOnCooldown() == false) { // Movement.
+		} else if (isHit() == true) {
+			if (getAnimation().getCurrentFrame() == hitLeft.getImage(3)
+					|| getAnimation().getCurrentFrame() == hitRight.getImage(3)) {
+				hitRecover();
+			}
+		} else if (isAttacking() == false && isHit() == false) { // Movement.
 			// Can only
 			// move if
 			// is
 			// not attacking and not hit
 
-			if (input.isKeyDown(Input.KEY_K)) {
+			if (input.isKeyPressed(Input.KEY_K)) {
 				startAttack(); // sets isAttacking() to true
 			}
 
-			if (input.isKeyDown(Input.KEY_A)) {
-				battleMoveLeft();
-				setxPosBattle(getxPosBattle() - delta * .2f);
+			else if (input.isKeyDown(Input.KEY_A)) {
+				battleMoveLeft(delta);
 				isMoving = true;
-				direction = 2;
+				setBattleDirection(1);
 			}
 
 			else if (input.isKeyDown(Input.KEY_D)) {
-				battleMoveRight();
-				setxPosBattle(getxPosBattle() + delta * .2f);
+				battleMoveRight(delta);
 				isMoving = true;
-				direction = 3;
+				setBattleDirection(2);
+				;
 			}
 
 			if (isMoving == false) {
-				switch (direction) {
-				case 2:
-					battleFaceLeft();
-					break;
-				case 3:
-					battleFaceRight();
-					break;
-				}
+				resetIdle();
 			}
 		}
 	}
@@ -286,8 +256,15 @@ public abstract class Hero extends BattleCharacter {
 		super.setSpriteSheets(idle, attack, battleMove);
 	}
 
+	public abstract void setHeroSprites() throws SlickException;
+
 	public float getxPosOut() {
 		return xPosOut;
+	}
+
+	protected void setHitAnimations(Animation hitLeft, Animation hitRight) {
+		super.setHitLeft(hitLeft);
+		super.setHitRight(hitRight);
 	}
 
 	public void setxPosOut(float xPosOut) {
@@ -316,13 +293,5 @@ public abstract class Hero extends BattleCharacter {
 
 	public void setHeightOut(int heightOut) {
 		this.heightOut = heightOut;
-	}
-
-	public float getHurtboxX() {
-		return hurtboxX;
-	}
-
-	public void setHurtboxX(float hurtboxX) {
-		this.hurtboxX = hurtboxX;
 	}
 }
