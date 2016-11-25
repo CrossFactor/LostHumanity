@@ -6,13 +6,55 @@ import org.newdawn.slick.Color;
 
 public class Hitbox {
 	private float x, y, width, height;
-	private Boolean canDamage = false;
+
+	/**
+	 * @return the width
+	 */
+	public float getWidth() {
+		return width;
+	}
+
+	/**
+	 * @param width the width to set
+	 */
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	/**
+	 * @return the height
+	 */
+	public float getHeight() {
+		return height;
+	}
+
+	/**
+	 * @param height the height to set
+	 */
+	public void setHeight(float height) {
+		this.height = height;
+	}
 
 	public Hitbox(float x, float y, float width, float height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	public float getX() {
+		return x;
+	}
+	public void setX(float x) {
+		this.x = x;
 	}
 
 	public float getCenterX() {
@@ -28,24 +70,15 @@ public class Hitbox {
 		this.height = height;
 	}
 
-
 	public void draw(Graphics g) {
 		g.setColor(Color.red);
 		g.drawRect(x, y, width, height);
 	}
 
 	public void update(float x, float y) {
-		this.x = x;
-		this.y = y;
+		setX(x);
+		setY(y);
 	}
 	
 	public Rectangle getBounds(){ return new Rectangle(x, y, width, height);}
-
-	public Boolean getCanDamage() {
-		return canDamage;
-	}
-
-	public void setCanDamage(Boolean canDamage) {
-		this.canDamage = canDamage;
-	}
 }

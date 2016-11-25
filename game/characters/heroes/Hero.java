@@ -12,6 +12,8 @@ import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.state.StateBasedGame;
+
+import game.Game;
 import game.characters.*;
 import game.util.Debug;
 
@@ -24,7 +26,7 @@ public abstract class Hero extends BattleCharacter {
 	private int heightOut = 80;
 	private float xPosOut = 376;
 	private float yPosOut = 3;
-	private int direction = 0;
+	private int direction = 4;
 
 	public Hero(BattleCharacterInfo info) {
 		super(info);
@@ -48,8 +50,8 @@ public abstract class Hero extends BattleCharacter {
 		isMoving = false;
 		if (input.isKeyDown(Input.KEY_W)) { // 206
 			Color c = worldMapWalls.getColor((int) xPosOut, (int) yPosOut + heightOut - 20);
-			Boolean collision = c.a == 0f;
-			if (collision) {
+			Boolean noCollision = c.a == 0f;
+			if (noCollision) {
 				moveUp();
 				setyPosOut(getyPosOut() - delta * .125f);
 				isMoving = true;
@@ -59,8 +61,8 @@ public abstract class Hero extends BattleCharacter {
 
 		else if (input.isKeyDown(Input.KEY_S)) {// -162
 			Color c = worldMapWalls.getColor((int) xPosOut, (int) yPosOut + heightOut);
-			Boolean collision = c.a == 0f;
-			if (collision) {
+			Boolean noCollision = c.a == 0f;
+			if (noCollision) {
 				moveDown();
 				setyPosOut(getyPosOut() + delta * .125f);
 				isMoving = true;
@@ -70,8 +72,8 @@ public abstract class Hero extends BattleCharacter {
 
 		else if (input.isKeyDown(Input.KEY_A)) { // 404
 			Color c = worldMapWalls.getColor((int) xPosOut - 3, (int) yPosOut + heightOut - 15);
-			Boolean collision = c.a == 0f;
-			if (collision) {
+			Boolean noCollision = c.a == 0f;
+			if (noCollision) {
 				moveLeft();
 				setxPosOut(getxPosOut() - delta * .125f);
 				isMoving = true;
@@ -81,8 +83,8 @@ public abstract class Hero extends BattleCharacter {
 
 		else if (input.isKeyDown(Input.KEY_D)) {// -381
 			Color c = worldMapWalls.getColor((int) xPosOut + widthOut, (int) yPosOut + heightOut - 15);
-			Boolean collision = c.a == 0f;
-			if (collision) {
+			Boolean noCollision = c.a == 0f;
+			if (noCollision) {
 				moveRight();
 				setxPosOut(getxPosOut() + delta * .125f);
 				isMoving = true;
@@ -170,16 +172,20 @@ public abstract class Hero extends BattleCharacter {
 			}
 
 			else if (input.isKeyDown(Input.KEY_A)) {
-				battleMoveLeft(delta);
-				isMoving = true;
-				setBattleDirection(1);
+				if (getHitbox().getX() - 10 > 0) {
+					battleMoveLeft(delta);
+					isMoving = true;
+					setBattleDirection(1);
+				}
 			}
 
 			else if (input.isKeyDown(Input.KEY_D)) {
-				battleMoveRight(delta);
-				isMoving = true;
-				setBattleDirection(2);
-				;
+				if (getHitbox().getX() + getHitbox().getWidth() + 10 < 800) {
+					battleMoveRight(delta);
+					isMoving = true;
+					setBattleDirection(2);
+				}
+
 			}
 
 			if (isMoving == false) {

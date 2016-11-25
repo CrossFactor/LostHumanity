@@ -18,7 +18,7 @@ public class Game extends StateBasedGame {
 	
 	public Game(String gamename){
 		super(gamename);
-		Debug.debugMode(true);
+		Debug.debugMode(false);
 		this.addState(new Menu(menu)); //States are the different states of the game. Menu for main menu
 		this.addState(new Play(play)); // we have play for game proper
 		this.addState(new Battle(battle)); //battle for battle game

@@ -1,6 +1,5 @@
 package game.states;
 
-
 import org.lwjgl.input.Mouse;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -10,9 +9,12 @@ import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
 
 import game.characters.heroes.Hero;
 import game.characters.heroes.Slayer;
+import game.util.Debug;
 
 public class Play extends BasicGameState {
 	Image worldMap;
@@ -38,25 +40,25 @@ public class Play extends BasicGameState {
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
+		hero.faceDown();
 		// sound.play();
 		music.loop();
 		hero.faceDown();
 	}
 
-	public void leave() throws SlickException {
-		// sound.stop();
-		// Songs.playBgm.stop();
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		super.leave(container, game);
+		quit = false;
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {// tiledmap
-		music = new Music("sounds/one/bgm1.wav");
-		if(hero instanceof Slayer){
-			((Slayer) hero).setHeroSprites();	
-		}
-		else if(hero instanceof Slayer){
+		music = new Music("sounds/one/bgm1.ogg");
+		if (hero instanceof Slayer) {
 			((Slayer) hero).setHeroSprites();
-		}
-		else if(hero instanceof Slayer){
+		} else if (hero instanceof Slayer) {
+			((Slayer) hero).setHeroSprites();
+		} else if (hero instanceof Slayer) {
 			((Slayer) hero).setHeroSprites();
 		}
 		worldMap = new Image("res/backgrounds/whole map/floor.png");
@@ -68,11 +70,13 @@ public class Play extends BasicGameState {
 		worldMap.draw(mapX, mapY);
 		worldMapWalls.draw(mapX, mapY);
 		hero.getAnimation().draw(hero.getxPosOut(), hero.getyPosOut());
-		g.drawString("X:" + hero.getxPosOut() + "\nY:" + hero.getyPosOut(), 10, 100);
-		g.drawString("mapX:" + mapX + "\nmapY:" + mapY, 10, 200);
-		g.drawString("Direction: " + direction, 10, 150);
-		g.drawString("MouseX:" + Mouse.getX() + "\nMouseY:" + Mouse.getY(), 10, 250);
-		g.drawString("Area: " + area, 10, 300);
+		if (Debug.debugMode == true) {
+			g.drawString("X:" + hero.getxPosOut() + "\nY:" + hero.getyPosOut(), 10, 100);
+			g.drawString("mapX:" + mapX + "\nmapY:" + mapY, 10, 200);
+			g.drawString("Direction: " + direction, 10, 150);
+			g.drawString("MouseX:" + Mouse.getX() + "\nMouseY:" + Mouse.getY(), 10, 250);
+			g.drawString("Area: " + area, 10, 300);
+		}
 
 		if (quit == true) {
 			g.drawString("Resume (R)", 250, 100);
@@ -93,10 +97,10 @@ public class Play extends BasicGameState {
 		case 1:
 			mapX = 0;
 			mapY = 0;
-			/*
-			 * if (hero.getyPosOut() >= 457 && (hero.getxPosOut() > 368 &&
-			 * hero.getxPosOut() < 382)) { area++; hero.setyPosOut(6); }
-			 */
+			if (hero.getyPosOut() >= 457 && (hero.getxPosOut() > 368 && hero.getxPosOut() < 382)) {
+				area++;
+				hero.setyPosOut(6);
+			}
 			break;
 		case 2:
 			mapX = 0;
@@ -129,7 +133,7 @@ public class Play extends BasicGameState {
 				quit = false;
 			}
 			if (input.isKeyDown(Input.KEY_M)) {
-				sbg.enterState(0);
+				sbg.enterState(0, new FadeOutTransition(), new FadeInTransition());
 			}
 			if (input.isKeyDown(Input.KEY_Q)) {
 				System.exit(0);

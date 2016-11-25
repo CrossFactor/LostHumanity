@@ -84,6 +84,12 @@ public abstract class BattleCharacter {
 	// functionality
 	public void startAttack() {
 		isAttacking = true;
+//		if(getBattleDirection() == 1){
+//			attackLeft();
+//		}
+//		else{
+//			attackRight();
+//		}
 	}
 
 	public void stopAttack() {

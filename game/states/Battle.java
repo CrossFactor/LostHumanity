@@ -5,6 +5,10 @@ import java.util.Vector;
 
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
+import org.newdawn.slick.state.transition.EmptyTransition;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
+import org.newdawn.slick.state.transition.SelectTransition;
 
 import game.characters.heroes.*;
 import game.characters.monsters.Monster;
@@ -25,11 +29,11 @@ public class Battle extends BasicGameState {
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
-		hero.battleFaceRight();
 		hero.stopAttack();
+		hero.battleFaceRight();
 		int enemyCount = new Random().nextInt(2) + 1;
 		this.enemyCount = enemyCount;
-		
+
 		enemies = new Vector<Monster>();
 
 		for (int i = 0; i < enemyCount; i++) {
@@ -40,14 +44,15 @@ public class Battle extends BasicGameState {
 		// sound.play();
 		music.loop();
 	}
-	
-	public void leave() throws SlickException {
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		super.leave(container, game);
 		enemyCount = DEFAULT_ENEMYCOUNT;
 		enemies = null;
 	}
-	
+
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		music = new Music("sounds/one/back3.wav");
+		music = new Music("sounds/one/back3.ogg");
 		hitSound = new Sound("sounds/one/impact1.wav");
 		battleMap = new Image("res/backgrounds800x600/2.png");
 		hero.battleFaceRight();
@@ -72,15 +77,15 @@ public class Battle extends BasicGameState {
 				if (hero.getHurtbox().getBounds().intersects(m.getHitbox().getBounds()) && m.isHit() == false
 						&& m.isAlive() == true) {
 					hero.attack(m);
-					if(m.isAlive() == false){
+					if (m.isAlive() == false) {
 						enemyCount--;
 					}
 					hitSound.play();
 				}
 			}
 		}
-		if(enemyCount == 0){
-			sbg.enterState(1);
+		if (enemyCount == 0) {
+			sbg.enterState(1, new FadeOutTransition(), new EmptyTransition());
 		}
 
 	}

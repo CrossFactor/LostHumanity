@@ -2,6 +2,8 @@ package game.states;
 
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
 
 public class Menu extends BasicGameState {
 
@@ -18,7 +20,7 @@ public class Menu extends BasicGameState {
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		music = new Music("sounds/one/mainMenuMusic.wav");
+		music = new Music("sounds/one/mainMenuMusic.ogg");
 		select = new Sound("sounds/one/powerup.wav");
 		menuNG = new Image("res/menu/menuNG.png");
 		menuQuit = new Image("res/menu/menuQuit.png");
@@ -69,7 +71,7 @@ public class Menu extends BasicGameState {
 			case 0:
 				break;
 			case 1:
-				sbg.enterState(1);
+				sbg.enterState(1, new FadeOutTransition(), new FadeInTransition());
 				break;
 			case 2:
 				System.exit(0);
