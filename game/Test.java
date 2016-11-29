@@ -155,7 +155,7 @@ public class Test extends BasicGameState {
 	}
 
 	public int getID() {
-		return 3;
+		return 5;
 	}
 }
 

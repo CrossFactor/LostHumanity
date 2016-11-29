@@ -18,8 +18,8 @@ public class Slayer extends Hero {
 	 * = 45 healthBarDistance = 0 aggression = 0 //player controlled moveSpeed =
 	 * 0.2f distanceFromTopAttack = 30 indexOfLastFrame = 4;
 	 * 
-	 * indexLastAttackFrame = 4 indexStartAttackFrame = 2 indexEndAttackFrame =
-	 * ?
+	 * indexLastAttackFrame = 4 indexStartAttackFrame = 2 indexEndAttackFrame = 4
+	 *
 	 */
 
 	public Slayer() {

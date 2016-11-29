@@ -13,6 +13,7 @@ import org.newdawn.slick.state.transition.SelectTransition;
 import game.characters.heroes.*;
 import game.characters.monsters.Monster;
 import game.characters.monsters.Teru;
+import game.util.Healthbar;
 
 public class Battle extends BasicGameState {
 	Hero hero = Slayer.slayer;
@@ -44,6 +45,7 @@ public class Battle extends BasicGameState {
 		// sound.play();
 		music.loop();
 	}
+
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		super.leave(container, game);
@@ -55,11 +57,14 @@ public class Battle extends BasicGameState {
 		music = new Music("sounds/one/back3.ogg");
 		hitSound = new Sound("sounds/one/impact1.wav");
 		battleMap = new Image("res/backgrounds800x600/2.png");
+		hero.setHealthbar(new Healthbar(hero.getInfo().getMaxHp(), 30,
+				500, hero.getInfo().getWidthBattle()));
 		hero.battleFaceRight();
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		battleMap.draw(0, 0);
+		g.drawString("HP: ", hero.getHealthbar().getX() - 40, hero.getHealthbar().getY() - 2);
 		hero.render(gc, sbg, g);
 		for (Monster m : enemies) {
 			m.render(gc, sbg, g);
@@ -84,8 +89,19 @@ public class Battle extends BasicGameState {
 				}
 			}
 		}
+		for (Monster m : enemies) {
+			if (m.hurtboxIsSpawned() == true) {
+				if (m.getHurtbox().getBounds().intersects(hero.getHitbox().getBounds()) && hero.isHit() == false
+						&& hero.isAlive() == true) {
+					m.attack(hero);
+				}
+			}
+		}
+		if(hero.isAlive() == false){
+			//TODO flash gameover screen here
+		}
 		if (enemyCount == 0) {
-			sbg.enterState(1, new FadeOutTransition(), new EmptyTransition());
+			sbg.enterState(3, new FadeOutTransition(), new EmptyTransition());
 		}
 
 	}
@@ -99,6 +115,6 @@ public class Battle extends BasicGameState {
 	}
 
 	public int getID() {
-		return 2;
+		return 4;
 	}
 }

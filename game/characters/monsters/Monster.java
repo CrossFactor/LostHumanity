@@ -42,53 +42,49 @@ public abstract class Monster extends BattleCharacter {
 			if (input.isKeyDown(Input.KEY_4))
 				;
 		}
-
-		// despawns hitbox
-		if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexEndAttackFrame())
-				|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexEndAttackFrame())) {
-			setHurtbox(null);
-		}
-
-		// stops attack animation at last frame
-		if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexLastFrame())
-				|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexLastFrame())) {
-			stopAttack(); // sets isAttacking() to false
-		} else if (isAttacking() == true) {
-			if (getBattleDirection() == 1) {
-				attackLeft();
-			} else {
-				attackRight();
-			}
-		} else if (isHit() == true) {
-			if (getAnimation().getCurrentFrame() == hitLeft.getImage(3)
-					|| getAnimation().getCurrentFrame() == hitRight.getImage(3)) {
-				hitRecover();
-			}
-		} else if (isAttacking() == false && isHit() == false) { // Movement.
-			// Can only
-			// move if
-			// is
-			// not attacking and not hit
-
-			if (input.isKeyPressed(Input.KEY_Y)) {
-				startAttack(); // sets isAttacking() to true
+		if (isAlive() == true) {
+			// despawns hitbox
+			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexEndAttackFrame())
+					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexEndAttackFrame())) {
+				setHurtbox(null);
 			}
 
-			else if (input.isKeyDown(Input.KEY_A)) {
-				battleMoveLeft(delta);
-				isMoving = true;
-				setBattleDirection(1);
-			}
+			// stops attack animation at last frame
+			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexLastFrame())
+					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexLastFrame())) {
+				stopAttack(); // sets isAttacking() to false
+			} else if (isAttacking() == true) {
+				if (getBattleDirection() == 1) {
+					attackLeft();
+				} else {
+					attackRight();
+				}
+			} else if (isAttacking() == false && isHit() == false) { // Movement.
+				// Can only
+				// move if
+				// is
+				// not attacking and not hit
 
-			else if (input.isKeyDown(Input.KEY_D)) {
-				battleMoveRight(delta);
-				isMoving = true;
-				setBattleDirection(2);
-				;
-			}
+				if (input.isKeyPressed(Input.KEY_L)) {
+					startAttack(); // sets isAttacking() to true
+				}
 
-			if (isMoving == false) {
-				resetIdle();
+				else if (input.isKeyDown(Input.KEY_LEFT)) {
+					battleMoveLeft(delta);
+					isMoving = true;
+					setBattleDirection(1);
+				}
+
+				else if (input.isKeyDown(Input.KEY_RIGHT)) {
+					battleMoveRight(delta);
+					isMoving = true;
+					setBattleDirection(2);
+					;
+				}
+
+				if (isMoving == false) {
+					resetIdle();
+				}
 			}
 		}
 	}

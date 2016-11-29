@@ -16,10 +16,11 @@ import org.newdawn.slick.state.StateBasedGame;
 import game.Game;
 import game.characters.*;
 import game.util.Debug;
+import game.util.Healthbar;
 
 public abstract class Hero extends BattleCharacter {
 	private Animation movingUp, movingDown, movingLeft, movingRight, idleUp, idleDown, idleLeft, idleRight;
-	private Boolean isMoving;
+	private Boolean isMoving = false;
 	private static final float DEFAULT_X = 400;
 	private static final float DEFAULT_Y = 300;
 	private int widthOut = 45;
@@ -46,16 +47,13 @@ public abstract class Hero extends BattleCharacter {
 																												// left
 																												// 3
 																												// right
-		// Sound.bg.loop();
 		isMoving = false;
+		// Sound.bg.loop();
 		if (input.isKeyDown(Input.KEY_W)) { // 206
 			Color c = worldMapWalls.getColor((int) xPosOut, (int) yPosOut + heightOut - 20);
 			Boolean noCollision = c.a == 0f;
 			if (noCollision) {
-				moveUp();
-				setyPosOut(getyPosOut() - delta * .125f);
-				isMoving = true;
-				direction = 0;
+				moveUp(delta);
 			}
 		}
 
@@ -63,10 +61,7 @@ public abstract class Hero extends BattleCharacter {
 			Color c = worldMapWalls.getColor((int) xPosOut, (int) yPosOut + heightOut);
 			Boolean noCollision = c.a == 0f;
 			if (noCollision) {
-				moveDown();
-				setyPosOut(getyPosOut() + delta * .125f);
-				isMoving = true;
-				direction = 1;
+				moveDown(delta);
 			}
 		}
 
@@ -74,10 +69,7 @@ public abstract class Hero extends BattleCharacter {
 			Color c = worldMapWalls.getColor((int) xPosOut - 3, (int) yPosOut + heightOut - 15);
 			Boolean noCollision = c.a == 0f;
 			if (noCollision) {
-				moveLeft();
-				setxPosOut(getxPosOut() - delta * .125f);
-				isMoving = true;
-				direction = 2;
+				moveLeft(delta);
 			}
 		}
 
@@ -85,10 +77,7 @@ public abstract class Hero extends BattleCharacter {
 			Color c = worldMapWalls.getColor((int) xPosOut + widthOut, (int) yPosOut + heightOut - 15);
 			Boolean noCollision = c.a == 0f;
 			if (noCollision) {
-				moveRight();
-				setxPosOut(getxPosOut() + delta * .125f);
-				isMoving = true;
-				direction = 3;
+				moveRight(delta);
 			}
 		}
 
@@ -116,7 +105,7 @@ public abstract class Hero extends BattleCharacter {
 			int battle = (new Random()).nextInt(5999) + 1;
 			if (battle == 6) {
 				music.stop();
-				sbg.enterState(2);
+				sbg.enterState(4);
 			}
 		}
 	}
@@ -133,82 +122,90 @@ public abstract class Hero extends BattleCharacter {
 	// controls for hero during battle
 	public void battleInput(GameContainer gc, StateBasedGame sbg, int delta, Input input) {
 		Boolean isMoving = false; // 0 up 1 down 2 left 3 right
-		// sends player back to menu TEMPORARY
-		if (Debug.debugMode == true) {
-			if (input.isKeyDown(Input.KEY_M)) {
-				sbg.enterState(1);
-			}
-			if (input.isKeyDown(Input.KEY_4))
-				;
-		}
-		// despawns hitbox after end attack frame
-		if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexEndAttackFrame())
-				|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexEndAttackFrame())) {
-			setHurtbox(null);
-		}
-		// stops attack animation at last frame
-		if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexLastFrame())
-				|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexLastFrame())) {
-			stopAttack(); // sets isAttacking() to false
-		} else if (isAttacking() == true) {
-			if (getBattleDirection() == 1) {
-				attackLeft();
-			} else {
-				attackRight();
-			}
-		} else if (isHit() == true) {
-			if (getAnimation().getCurrentFrame() == hitLeft.getImage(3)
-					|| getAnimation().getCurrentFrame() == hitRight.getImage(3)) {
-				hitRecover();
-			}
-		} else if (isAttacking() == false && isHit() == false) { // Movement.
-			// Can only
-			// move if
-			// is
-			// not attacking and not hit
-
-			if (input.isKeyPressed(Input.KEY_K)) {
-				startAttack(); // sets isAttacking() to true
-			}
-
-			else if (input.isKeyDown(Input.KEY_A)) {
-				if (getHitbox().getX() - 10 > 0) {
-					battleMoveLeft(delta);
-					isMoving = true;
-					setBattleDirection(1);
+		if (isAlive() == true) {
+			// sends player back to menu TEMPORARY
+			if (Debug.debugMode == true) {
+				if (input.isKeyDown(Input.KEY_M)) {
+					sbg.enterState(1);
 				}
+				if (input.isKeyDown(Input.KEY_4));
 			}
+			// despawns hitbox after end attack frame
+			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexEndAttackFrame())
+					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexEndAttackFrame())) {
+				setHurtbox(null);
+			}
+			// stops attack animation at last frame
+			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexLastFrame())
+					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexLastFrame())) {
+				stopAttack(); // sets isAttacking() to false
+			} else if (isAttacking() == true) {
+				if (getBattleDirection() == 1) {
+					attackLeft();
+				} else {
+					attackRight();
+				}
+			} else if (isAttacking() == false && isHit() == false) { // Movement.
+				// Can only
+				// move if
+				// is
+				// not attacking and not hit
 
-			else if (input.isKeyDown(Input.KEY_D)) {
-				if (getHitbox().getX() + getHitbox().getWidth() + 10 < 800) {
-					battleMoveRight(delta);
-					isMoving = true;
-					setBattleDirection(2);
+				if (input.isKeyPressed(Input.KEY_K)) {
+					startAttack(); // sets isAttacking() to true
 				}
 
-			}
+				else if (input.isKeyDown(Input.KEY_A)) {
+					if (getHitbox().getX() - 10 > 0) {
+						battleMoveLeft(delta);
+						isMoving = true;
+						setBattleDirection(1);
+					}
+				}
 
-			if (isMoving == false) {
-				resetIdle();
+				else if (input.isKeyDown(Input.KEY_D)) {
+					if (getHitbox().getX() + getHitbox().getWidth() + 10 < 800) {
+						battleMoveRight(delta);
+						isMoving = true;
+						setBattleDirection(2);
+					}
+
+				}
+
+				if (isMoving == false) {
+					resetIdle();
+				}
 			}
 		}
 	}
 
 	// functionality
-	public void moveUp() {
+	public void moveUp(int delta) {
 		setAnimation(movingUp);
+		setyPosOut(getyPosOut() - delta * .125f);
+		isMoving = true;
+		direction = 0;
 	}
 
-	public void moveDown() {
+	public void moveDown(int delta) {
 		setAnimation(movingDown);
+		setyPosOut(getyPosOut() + delta * .125f);
+		isMoving = true;
+		direction = 1;
 	}
 
-	public void moveLeft() {
+	public void moveLeft(int delta) {
 		setAnimation(movingLeft);
+		setxPosOut(getxPosOut() - delta * .125f);
+		isMoving = true;
+		direction = 2;
 	}
 
-	public void moveRight() {
+	public void moveRight(int delta) {
 		setAnimation(movingRight);
+		setxPosOut(getxPosOut() + delta * .125f);
+		isMoving = true;
+		direction = 3;
 	}
 
 	public void faceUp() {
@@ -226,20 +223,10 @@ public abstract class Hero extends BattleCharacter {
 	public void faceRight() {
 		setAnimation(idleRight);
 	}
-
-	public void face(int direction) {
-		switch (direction) {
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
-		}
+	@Override
+	public void updateHealthbar(GameContainer gc){
+		healthbar.update(105, 520);
 	}
-
 	// getters and setters
 	public void setSpriteSheets(List<SpriteSheet> move, List<SpriteSheet> idle, List<SpriteSheet> attack,
 			List<SpriteSheet> battleMove) {

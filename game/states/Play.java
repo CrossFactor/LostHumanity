@@ -133,18 +133,18 @@ public class Play extends BasicGameState {
 				quit = false;
 			}
 			if (input.isKeyDown(Input.KEY_M)) {
-				sbg.enterState(0, new FadeOutTransition(), new FadeInTransition());
+				sbg.enterState(2, new FadeOutTransition(), new FadeInTransition());
 			}
 			if (input.isKeyDown(Input.KEY_Q)) {
 				System.exit(0);
 			}
 			if (input.isKeyDown(Input.KEY_E)) {
-				sbg.enterState(2);
+				sbg.enterState(4);
 			}
 		}
 	}
 
 	public int getID() {
-		return 1;
+		return 3;
 	}
 }

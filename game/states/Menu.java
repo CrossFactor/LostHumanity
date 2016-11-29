@@ -71,7 +71,7 @@ public class Menu extends BasicGameState {
 			case 0:
 				break;
 			case 1:
-				sbg.enterState(1, new FadeOutTransition(), new FadeInTransition());
+				sbg.enterState(3, new FadeOutTransition(), new FadeInTransition());
 				break;
 			case 2:
 				System.exit(0);
@@ -81,6 +81,6 @@ public class Menu extends BasicGameState {
 	}
 
 	public int getID() {
-		return 0;
+		return 2;
 	}
 }

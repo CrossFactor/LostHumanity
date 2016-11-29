@@ -11,7 +11,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import game.util.Debug;
 import game.util.Healthbar;
-import game.util.Hitbox;
+import game.util.Box;
 
 public abstract class BattleCharacter {
 	protected BattleCharacterInfo info;
@@ -26,27 +26,28 @@ public abstract class BattleCharacter {
 	protected Animation hitLeft, hitRight;
 	private float xPosBattle = 400;
 	private float yPosBattle = 400;
-	private Hitbox hitbox, hurtbox;
-	private Healthbar healthbar;
-	private Hitbox aggressionBoxLeft, aggressionBoxRight;
+	private Box hitbox, hurtbox;
+	protected Healthbar healthbar;
+	private Box aggressionBoxLeft, aggressionBoxRight;
 	private float hurtboxX;
 	private boolean isAlive = true;
+	private float hitCd, cdIncrement = 0;
 
 	public abstract void battle(GameContainer gc, StateBasedGame sbg, int delta);
 
 	public BattleCharacter(BattleCharacterInfo info) {
 		this.info = info;
-		setHitbox(new Hitbox(getCenterX() - (info.getHitboxWidth() / 2), yPosBattle + info.getDistanceFromTop(),
+		setHitbox(new Box(getCenterX() - (info.getHitboxWidth() / 2), yPosBattle + info.getDistanceFromTop(),
 				info.getHitboxWidth(), info.getHitboxHeight()));
 
 		setHealthbar(new Healthbar(info.getMaxHp(), getCenterX() - (info.getMaxHp() / 2),
 				yPosBattle - info.getHealthBarDistance(), info.getWidthBattle()));
 
-		Hitbox aggressionLeft = info.getAggression() == 0 ? null
-				: new Hitbox(getCenterX() - (info.getAggression()), yPosBattle, info.getAggression(),
+		Box aggressionLeft = info.getAggression() == 0 ? null
+				: new Box(getCenterX() - (info.getAggression()), yPosBattle, info.getAggression(),
 						info.getHeightBattle());
-		Hitbox aggressionRight = info.getAggression() == 0 ? null
-				: new Hitbox(getCenterX(), yPosBattle, info.getAggression(), info.getHeightBattle());
+		Box aggressionRight = info.getAggression() == 0 ? null
+				: new Box(getCenterX(), yPosBattle, info.getAggression(), info.getHeightBattle());
 		setAggressionBoxLeft(aggressionLeft);
 		setAggressionBoxRight(aggressionRight);
 	}
@@ -72,24 +73,36 @@ public abstract class BattleCharacter {
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 		getAnimation().update(delta);
-		healthbar.update(getCenterX() - (info.getMaxHp() / 2), yPosBattle - info.getHealthBarDistance());
+		updateHealthbar(gc);
 		hitbox.update(getCenterX() - (info.getHitboxWidth() / 2), yPosBattle + info.getDistanceFromTop());
 		battle(gc, sbg, delta);
+		hitCd += delta * cdIncrement;
+		updateRecover();
 		if (aggressionBoxLeft != null && aggressionBoxRight != null) {
 			aggressionBoxLeft.update((getCenterX() - (info.getAggression())), yPosBattle);
 			aggressionBoxRight.update(getCenterX(), yPosBattle);
 		}
+		if (isAlive == false) {
+			info.setCurrentHp(0);
+		}
 	}
 
 	// functionality
+	public void updateRecover() {
+		if (isHit() == true) {
+			if (getHitCd() > 49) {
+				hitRecover();
+				setHitCd(0);
+			}
+		}
+	}
+
+	public void updateHealthbar(GameContainer gc) {
+		healthbar.update(getCenterX() - (info.getMaxHp() / 2), yPosBattle - info.getHealthBarDistance());
+	}
+
 	public void startAttack() {
 		isAttacking = true;
-//		if(getBattleDirection() == 1){
-//			attackLeft();
-//		}
-//		else{
-//			attackRight();
-//		}
 	}
 
 	public void stopAttack() {
@@ -108,6 +121,7 @@ public abstract class BattleCharacter {
 
 	public void hit() {
 		isHit = true;
+		setCdIncrement(.1f);
 	}
 
 	public void resetIdle() {
@@ -120,6 +134,7 @@ public abstract class BattleCharacter {
 
 	public void hitRecover() {
 		isHit = false;
+		setCdIncrement(0f);
 		resetIdle();
 	}
 
@@ -138,11 +153,12 @@ public abstract class BattleCharacter {
 	}
 
 	public void takeDamage(int damage) {
-		this.info.setCurrentHp(this.info.getCurrentHp() - damage);
-		this.healthbar.setCurrentHp(this.info.getCurrentHp());
-		if (info.getCurrentHp() <= 0) {
-			info.setCurrentHp(0);
-			killed();
+		if (isHit == false) {
+			this.info.setCurrentHp(this.info.getCurrentHp() - damage);
+			this.healthbar.setCurrentHp(this.info.getCurrentHp());
+			if (info.getCurrentHp() <= 0) {
+				killed();
+			}
 		}
 	}
 
@@ -151,6 +167,7 @@ public abstract class BattleCharacter {
 	}
 
 	public void killed() {
+		info.setCurrentHp(0);
 		isAlive = false;
 	}
 
@@ -210,6 +227,10 @@ public abstract class BattleCharacter {
 	}
 
 	// getters and setters
+	public Healthbar getHealthbar() {
+		return healthbar;
+	}
+
 	public float getxPosBattle() {
 		return xPosBattle;
 	}
@@ -226,7 +247,7 @@ public abstract class BattleCharacter {
 		this.yPosBattle = yPosBattle;
 	}
 
-	private void setHealthbar(Healthbar healthbar) {
+	public void setHealthbar(Healthbar healthbar) {
 		this.healthbar = healthbar;
 	}
 
@@ -247,19 +268,19 @@ public abstract class BattleCharacter {
 		this.animation = animation;
 	}
 
-	public Hitbox getHitbox() {
+	public Box getHitbox() {
 		return hitbox;
 	}
 
-	public void setHitbox(Hitbox charHitbox) {
+	public void setHitbox(Box charHitbox) {
 		this.hitbox = charHitbox;
 	}
 
-	public Hitbox getHurtbox() {
+	public Box getHurtbox() {
 		return hurtbox;
 	}
 
-	public void setHurtbox(Hitbox hurtbox) {
+	public void setHurtbox(Box hurtbox) {
 		this.hurtbox = hurtbox;
 	}
 
@@ -319,19 +340,19 @@ public abstract class BattleCharacter {
 		this.hurtboxX = hurtboxX;
 	}
 
-	public Hitbox getAggressionBoxLeft() {
+	public Box getAggressionBoxLeft() {
 		return aggressionBoxLeft;
 	}
 
-	public void setAggressionBoxLeft(Hitbox aggressionBoxLeft) {
+	public void setAggressionBoxLeft(Box aggressionBoxLeft) {
 		this.aggressionBoxLeft = aggressionBoxLeft;
 	}
 
-	public Hitbox getAggressionBoxRight() {
+	public Box getAggressionBoxRight() {
 		return aggressionBoxRight;
 	}
 
-	public void setAggressionBoxRight(Hitbox aggressionBoxRight) {
+	public void setAggressionBoxRight(Box aggressionBoxRight) {
 		this.aggressionBoxRight = aggressionBoxRight;
 	}
 
@@ -342,7 +363,23 @@ public abstract class BattleCharacter {
 	public void setHurtboxSpawned(Boolean hurtboxSpawned) {
 		this.hurtboxSpawned = hurtboxSpawned;
 		setHurtbox(hurtboxSpawned == false ? null
-				: new Hitbox(hurtboxX, getyPosBattle() + info.getDistanceFromTopAttack(), info.getHurtboxWidth(),
+				: new Box(hurtboxX, getyPosBattle() + info.getDistanceFromTopAttack(), info.getHurtboxWidth(),
 						info.getHeightBattle() - info.getDistanceFromTopAttack()));
+	}
+
+	public float getHitCd() {
+		return hitCd;
+	}
+
+	public void setHitCd(float hitCd) {
+		this.hitCd = hitCd;
+	}
+
+	public float getCdIncrement() {
+		return cdIncrement;
+	}
+
+	public void setCdIncrement(float cdIncrement) {
+		this.cdIncrement = cdIncrement;
 	}
 }
