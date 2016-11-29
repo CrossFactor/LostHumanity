@@ -1,15 +1,6 @@
 package game.characters;
 
 public class BattleCharacterInfo {
-	// private static int hp = 100;
-		// private static int damage = 20;
-		// private static int widthBattle = 300;
-		// private static int heightBattle = 200;
-		// private static float hurtboxWidth = 80;
-		// private static float gapFromCenter = 45;
-		// private static int distanceFromTop = 81;
-		// private int hitboxWidth = 30;
-		// private int hitboxHeight = 65;
 	private String name;
 	private int maxHp, damage, widthBattle, heightBattle, hitboxWidth, hitboxHeight, distanceFromTop;
 	private float hurtboxWidth, gapFromCenter;
@@ -18,9 +9,11 @@ public class BattleCharacterInfo {
 	private int currentHp, attackRangeBox;
 	private float distanceFromTopAttack;
 	private int indexLastFrame, indexStartAttackFrame, indexEndAttackFrame;
-	public BattleCharacterInfo(String name, int hp, int damage, int widthBattle, int heightBattle, int hitboxWidth, int hitboxHeight, 
-			int distanceFromTop, float hurtboxWidth, float gapFromCenter, int healthBarDistance, int aggression, float moveSpeed, float distanceFromTopAttack,
-			int indexLastFrame, int indexStartAttackFrame, int indexEndAttackFrame){
+
+	public BattleCharacterInfo(String name, int hp, int damage, int widthBattle, int heightBattle, int hitboxWidth,
+			int hitboxHeight, int distanceFromTop, float hurtboxWidth, float gapFromCenter, int healthBarDistance,
+			int aggression, float moveSpeed, float distanceFromTopAttack, int indexLastFrame, int indexStartAttackFrame,
+			int indexEndAttackFrame) {
 		setName(name);
 		setMaxHp(hp);
 		setDamage(damage);
@@ -41,46 +34,59 @@ public class BattleCharacterInfo {
 		setIndexStartAttackFrame(indexStartAttackFrame);
 		setIndexEndAttackFrame(indexEndAttackFrame);
 	}
-	
+
 	public int getDamage() {
 		return damage;
 	}
+
 	public void setDamage(int damage) {
 		this.damage = damage;
 	}
+
 	public int getWidthBattle() {
 		return widthBattle;
 	}
+
 	public void setWidthBattle(int widthBattle) {
 		this.widthBattle = widthBattle;
 	}
+
 	public int getHeightBattle() {
 		return heightBattle;
 	}
+
 	public void setHeightBattle(int heightBattle) {
 		this.heightBattle = heightBattle;
 	}
+
 	public int getHitboxWidth() {
 		return hitboxWidth;
 	}
+
 	public void setHitboxWidth(int hitboxWidth) {
 		this.hitboxWidth = hitboxWidth;
 	}
+
 	public int getHitboxHeight() {
 		return hitboxHeight;
 	}
+
 	public void setHitboxHeight(int hitboxHeight) {
 		this.hitboxHeight = hitboxHeight;
 	}
+
 	public float getHurtboxWidth() {
 		return hurtboxWidth;
 	}
+
 	public void setHurtboxWidth(float hurtboxWidth) {
 		this.hurtboxWidth = hurtboxWidth;
 	}
+
 	public float getGapFromCenter() {
 		return gapFromCenter;
 	}
+
 	public void setGapFromCenter(float gapfromCenter) {
 		this.gapFromCenter = gapfromCenter;
 	}
@@ -180,5 +186,5 @@ public class BattleCharacterInfo {
 	public void setIndexStartAttackFrame(int indexStartAttackFrame) {
 		this.indexStartAttackFrame = indexStartAttackFrame;
 	}
-	
+
 }
