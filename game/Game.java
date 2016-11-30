@@ -39,7 +39,7 @@ public class Game extends StateBasedGame {
 		this.getState(test).init(gc, this);
 		this.getState(op).init(gc, this);
 		this.getState(op2).init(gc, this);
-		this.enterState(op); //this shows what state enters first
+		this.enterState(battle); //this shows what state enters first
 	}
 	
 	public static void main(String[] args) {

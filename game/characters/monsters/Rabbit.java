@@ -2,6 +2,9 @@ package game.characters.monsters;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.newdawn.slick.Animation;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
@@ -40,6 +43,16 @@ public class Rabbit extends Monster {
 		List<SpriteSheet> idle = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> attack = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> battleMove = new ArrayList<SpriteSheet>();
+		Image[] hitLeftImages = { new Image("res/monsters/teru/attackMelee/hitLeft.png"),
+				new Image("res/monsters/teru/attackMelee/hitLeft.png"),
+				new Image("res/monsters/teru/attackMelee/hitLeft.png"),
+				new Image("res/monsters/teru/attackMelee/hitLeft.png") };
+		Image[] hitRightImages = { new Image("res/monsters/teru/attackMelee/hitRight.png"),
+				new Image("res/monsters/teru/attackMelee/hitRight.png"),
+				new Image("res/monsters/teru/attackMelee/hitRight.png"),
+				new Image("res/monsters/teru/attackMelee/hitRight.png") };
+		Animation hitLeft = new Animation(hitLeftImages, 500, true);
+		Animation hitRight = new Animation(hitRightImages, 500, true);
 		idle.add(idleLeft);
 		idle.add(idleRight);
 		attack.add(attackLeft);
@@ -47,5 +60,6 @@ public class Rabbit extends Monster {
 		battleMove.add(battleMoveLeft);
 		battleMove.add(battleMoveRight);
 		setSpriteSheets(idle, attack, battleMove);
+		setHitAnimations(hitLeft, hitRight);
 	}
 }

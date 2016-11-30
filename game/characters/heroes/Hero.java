@@ -21,7 +21,7 @@ import game.util.Healthbar;
 public abstract class Hero extends BattleCharacter {
 	private Animation movingUp, movingDown, movingLeft, movingRight, idleUp, idleDown, idleLeft, idleRight;
 	private Boolean isMoving = false;
-	private static final float DEFAULT_X = 400;
+	private static final float DEFAULT_X = 50;
 	private static final float DEFAULT_Y = 300;
 	private int widthOut = 45;
 	private int heightOut = 80;
@@ -122,7 +122,7 @@ public abstract class Hero extends BattleCharacter {
 	// controls for hero during battle
 	public void battleInput(GameContainer gc, StateBasedGame sbg, int delta, Input input) {
 		Boolean isMoving = false; // 0 up 1 down 2 left 3 right
-		if (isAlive() == true) {
+		if (isAlive()) {
 			// sends player back to menu TEMPORARY
 			if (Debug.debugMode == true) {
 				if (input.isKeyDown(Input.KEY_M)) {
@@ -133,7 +133,7 @@ public abstract class Hero extends BattleCharacter {
 			// despawns hitbox after end attack frame
 			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexEndAttackFrame())
 					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexEndAttackFrame())) {
-				setHurtbox(null);
+				getHitboxes().setHurtbox(null);
 			}
 			// stops attack animation at last frame
 			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexLastFrame())
@@ -156,7 +156,7 @@ public abstract class Hero extends BattleCharacter {
 				}
 
 				else if (input.isKeyDown(Input.KEY_A)) {
-					if (getHitbox().getX() - 10 > 0) {
+					if (getHitboxes().getHitbox().getX() - 10 > 0) {
 						battleMoveLeft(delta);
 						isMoving = true;
 						setBattleDirection(1);
@@ -164,7 +164,7 @@ public abstract class Hero extends BattleCharacter {
 				}
 
 				else if (input.isKeyDown(Input.KEY_D)) {
-					if (getHitbox().getX() + getHitbox().getWidth() + 10 < 800) {
+					if (getHitboxes().getHitbox().getX() + getHitboxes().getHitbox().getWidth() + 10 < 800) {
 						battleMoveRight(delta);
 						isMoving = true;
 						setBattleDirection(2);

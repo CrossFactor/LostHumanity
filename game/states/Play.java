@@ -22,6 +22,7 @@ public class Play extends BasicGameState {
 	boolean quit = false;
 	int direction = 1;
 	int area = 1;
+	int stage = 1;
 	int mapX = 0;
 	int mapY = 0;
 	String job = "slayer";
@@ -93,6 +94,38 @@ public class Play extends BasicGameState {
 		hero.getAnimation().update(delta);
 		hero.moveOut(gc, sbg, delta, input, worldMapWalls);
 		hero.findBattle(music, sbg);
+
+		mapLogic();
+
+		if (input.isKeyDown(Input.KEY_ESCAPE)) {
+			quit = true;
+		}
+
+		if (quit == true) {
+			if (input.isKeyDown(Input.KEY_R)) {
+				quit = false;
+			}
+			if (input.isKeyDown(Input.KEY_M)) {
+				sbg.enterState(2, new FadeOutTransition(), new FadeInTransition());
+			}
+			if (input.isKeyDown(Input.KEY_Q)) {
+				System.exit(0);
+			}
+			if (input.isKeyDown(Input.KEY_E)) {
+				sbg.enterState(4);
+			}
+		}
+	}
+
+	public void mapLogic() {
+		switch (stage) {
+		case 1:
+			stageOne();
+			break;
+		}
+	}
+
+	public void stageOne() {
 		switch (area) {
 		case 1:
 			mapX = 0;
@@ -122,25 +155,6 @@ public class Play extends BasicGameState {
 			mapX = -800;
 			mapY = -1200;
 			break;
-		}
-
-		if (input.isKeyDown(Input.KEY_ESCAPE)) {
-			quit = true;
-		}
-
-		if (quit == true) {
-			if (input.isKeyDown(Input.KEY_R)) {
-				quit = false;
-			}
-			if (input.isKeyDown(Input.KEY_M)) {
-				sbg.enterState(2, new FadeOutTransition(), new FadeInTransition());
-			}
-			if (input.isKeyDown(Input.KEY_Q)) {
-				System.exit(0);
-			}
-			if (input.isKeyDown(Input.KEY_E)) {
-				sbg.enterState(4);
-			}
 		}
 	}
 

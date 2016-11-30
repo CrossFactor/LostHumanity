@@ -36,9 +36,10 @@ public class Battle extends BasicGameState {
 		this.enemyCount = enemyCount;
 
 		enemies = new Vector<Monster>();
-
+		int pos = 500;
 		for (int i = 0; i < enemyCount; i++) {
-			addRandomEnemy();
+			addRandomEnemy(pos);
+			pos += 100; // pos increments 50 to change spawn incase of 2 enemies
 		}
 
 		hero.reset();
@@ -57,8 +58,7 @@ public class Battle extends BasicGameState {
 		music = new Music("sounds/one/back3.ogg");
 		hitSound = new Sound("sounds/one/impact1.wav");
 		battleMap = new Image("res/backgrounds800x600/2.png");
-		hero.setHealthbar(new Healthbar(hero.getInfo().getMaxHp(), 30,
-				500, hero.getInfo().getWidthBattle()));
+		hero.setHealthbar(new Healthbar(hero.getInfo().getMaxHp(), 30, 500, hero.getInfo().getWidthBattle()));
 		hero.battleFaceRight();
 	}
 
@@ -79,8 +79,8 @@ public class Battle extends BasicGameState {
 
 		if (hero.hurtboxIsSpawned() == true) {
 			for (Monster m : enemies) {
-				if (hero.getHurtbox().getBounds().intersects(m.getHitbox().getBounds()) && m.isHit() == false
-						&& m.isAlive() == true) {
+				if (hero.getHitboxes().getHurtbox().getBounds().intersects(m.getHitboxes().getHitbox().getBounds())
+						&& m.isHit() == false && m.isAlive() == true) {
 					hero.attack(m);
 					if (m.isAlive() == false) {
 						enemyCount--;
@@ -91,14 +91,14 @@ public class Battle extends BasicGameState {
 		}
 		for (Monster m : enemies) {
 			if (m.hurtboxIsSpawned() == true) {
-				if (m.getHurtbox().getBounds().intersects(hero.getHitbox().getBounds()) && hero.isHit() == false
-						&& hero.isAlive() == true) {
+				if (m.getHitboxes().getHurtbox().getBounds().intersects(hero.getHitboxes().getHitbox().getBounds())
+						&& hero.isHit() == false && hero.isAlive() == true) {
 					m.attack(hero);
 				}
 			}
 		}
-		if(hero.isAlive() == false){
-			//TODO flash gameover screen here
+		if (hero.isAlive() == false) {
+			// TODO flash gameover screen here
 		}
 		if (enemyCount == 0) {
 			sbg.enterState(3, new FadeOutTransition(), new EmptyTransition());
@@ -106,11 +106,13 @@ public class Battle extends BasicGameState {
 
 	}
 
-	private void addRandomEnemy() throws SlickException {
+	private void addRandomEnemy(int pos) throws SlickException {
 		int enemyType = new Random().nextInt(1);
 		Monster m = (enemyType == 0) ? new Teru() : new Teru();
 		((Teru) m).setMonsterSheets();
 		m.battleFaceLeft();
+		m.getAnimation().start();
+		m.setxPosBattle(pos);
 		enemies.add(m);
 	}
 

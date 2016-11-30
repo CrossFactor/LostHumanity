@@ -16,7 +16,7 @@ public abstract class Monster extends BattleCharacter {
 
 	public Monster(BattleCharacterInfo info) {
 		super(info);
-
+		battleFaceLeft();
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public abstract class Monster extends BattleCharacter {
 			// despawns hitbox
 			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexEndAttackFrame())
 					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexEndAttackFrame())) {
-				setHurtbox(null);
+				getHitboxes().setHurtbox(null);
 			}
 
 			// stops attack animation at last frame

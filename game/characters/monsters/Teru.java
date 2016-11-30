@@ -20,7 +20,7 @@ public class Teru extends Monster {
 	 * TEMPORARY indexEndAttackFrame = 5 TEMPORARY
 	 */
 	public Teru() {
-		super(new BattleCharacterInfo("teru", 80, 15, 100, 80, 40, 55, 4, 50, 0, 20, 10, 0.15f, 10, 5, 3, 5));
+		super(new BattleCharacterInfo("teru", 80, 15, 100, 80, 40, 55, 4, 50, 0, 20, 15, 0.15f, 10, 5, 3, 5));
 	}
 
 	public void setMonsterSheets() throws SlickException {

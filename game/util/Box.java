@@ -7,34 +7,6 @@ import org.newdawn.slick.Color;
 public class Box {
 	private float x, y, width, height;
 
-	/**
-	 * @return the width
-	 */
-	public float getWidth() {
-		return width;
-	}
-
-	/**
-	 * @param width the width to set
-	 */
-	public void setWidth(float width) {
-		this.width = width;
-	}
-
-	/**
-	 * @return the height
-	 */
-	public float getHeight() {
-		return height;
-	}
-
-	/**
-	 * @param height the height to set
-	 */
-	public void setHeight(float height) {
-		this.height = height;
-	}
-
 	public Box(float x, float y, float width, float height) {
 		this.x = x;
 		this.y = y;
@@ -53,6 +25,7 @@ public class Box {
 	public float getX() {
 		return x;
 	}
+
 	public void setX(float x) {
 		this.x = x;
 	}
@@ -72,13 +45,31 @@ public class Box {
 
 	public void draw(Graphics g) {
 		g.setColor(Color.red);
-		g.drawRect(x, y, width, height);
+		g.draw(getBounds());
 	}
 
 	public void update(float x, float y) {
 		setX(x);
 		setY(y);
 	}
-	
-	public Rectangle getBounds(){ return new Rectangle(x, y, width, height);}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	public float getHeight() {
+		return height;
+	}
+
+	public void setHeight(float height) {
+		this.height = height;
+	}
+
+	public Rectangle getBounds() {
+		return new Rectangle(x, y, width, height);
+	}
 }
