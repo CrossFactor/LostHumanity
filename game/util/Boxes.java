@@ -8,6 +8,7 @@ public class Boxes {
 	private Box hitbox, hurtbox;
 	private Box aggressionBoxLeft, aggressionBoxRight;
 	private Box attackBox;
+	//private Box targetRightBox;
 
 	public Boxes() {
 	}
@@ -26,32 +27,19 @@ public class Boxes {
 	}
 
 	// getters and setters
-	/**
-	 * @return the aggressionBoxLeft
-	 */
 	public Box getAggressionBoxLeft() {
 		return aggressionBoxLeft;
 	}
 
-	/**
-	 * @param aggressionBoxLeft
-	 *            the aggressionBoxLeft to set
-	 */
 	public void setAggressionBoxLeft(Box aggressionBoxLeft) {
 		this.aggressionBoxLeft = aggressionBoxLeft;
 	}
 
-	/**
-	 * @return the aggressionBoxRight
-	 */
+	
 	public Box getAggressionBoxRight() {
 		return aggressionBoxRight;
 	}
 
-	/**
-	 * @param aggressionBoxRight
-	 *            the aggressionBoxRight to set
-	 */
 	public void setAggressionBoxRight(Box aggressionBoxRight) {
 		this.aggressionBoxRight = aggressionBoxRight;
 	}
@@ -84,5 +72,17 @@ public class Boxes {
 		aggressionBoxLeft.draw(g);
 		aggressionBoxRight.draw(g);
 	}
+
+//	public Box getTargetRightBox() {
+//		return targetRightBox;
+//	}
+//
+//	public void setTargetRightBox(Box targetRightBox) {
+//		this.targetRightBox = targetRightBox;
+//	}
+//
+//	public void drawTargetRightBox(Graphics g) {
+//		targetRightBox.draw(g);
+//	}
 
 }

@@ -36,8 +36,8 @@ public class Rabbit extends Monster {
 	public void setMonsterSheets() throws SlickException{
 		SpriteSheet idleLeft = new SpriteSheet("res/monsters/teru/idle/idleLeft.png", 100, 80);
 		SpriteSheet idleRight = new SpriteSheet("res/monsters/teru/idle/idleRight.png", 100, 80);
-		SpriteSheet attackLeft = new SpriteSheet("res/monsters/teru/attackMelee/attackMeleeLeft.png", 100, 80);
-		SpriteSheet attackRight = new SpriteSheet("res/monsters/teru/attackMelee/attackMeleeRight.png", 100, 80);
+		SpriteSheet attackLeft = new SpriteSheet("res/monsters/teru/attackMelee/attackLeft.png", 100, 80);
+		SpriteSheet attackRight = new SpriteSheet("res/monsters/teru/attackMelee/attackRight.png", 100, 80);
 		SpriteSheet battleMoveLeft = new SpriteSheet("res/monsters/teru/move/moveLeft.png", 100, 80);
 		SpriteSheet battleMoveRight = new SpriteSheet("res/monsters/teru/move/moveRight.png", 100, 80);
 		List<SpriteSheet> idle = new ArrayList<SpriteSheet>();

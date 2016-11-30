@@ -20,7 +20,7 @@ import game.util.Healthbar;
 
 public abstract class Hero extends BattleCharacter {
 	private Animation movingUp, movingDown, movingLeft, movingRight, idleUp, idleDown, idleLeft, idleRight;
-	private Boolean isMoving = false;
+	private Boolean moving = false;
 	private static final float DEFAULT_X = 50;
 	private static final float DEFAULT_Y = 300;
 	private int widthOut = 45;
@@ -47,7 +47,7 @@ public abstract class Hero extends BattleCharacter {
 																												// left
 																												// 3
 																												// right
-		isMoving = false;
+		moving = false;
 		// Sound.bg.loop();
 		if (input.isKeyDown(Input.KEY_W)) { // 206
 			Color c = worldMapWalls.getColor((int) xPosOut, (int) yPosOut + heightOut - 20);
@@ -63,7 +63,7 @@ public abstract class Hero extends BattleCharacter {
 			if (noCollision) {
 				moveDown(delta);
 			}
-		}
+		} 
 
 		else if (input.isKeyDown(Input.KEY_A)) { // 404
 			Color c = worldMapWalls.getColor((int) xPosOut - 3, (int) yPosOut + heightOut - 15);
@@ -81,7 +81,7 @@ public abstract class Hero extends BattleCharacter {
 			}
 		}
 
-		if (isMoving == false) {
+		if (moving == false) {
 			switch (direction) {
 			case 0:
 				faceUp();
@@ -101,7 +101,7 @@ public abstract class Hero extends BattleCharacter {
 
 	// generates random number to find battle while moving
 	public void findBattle(Music music, StateBasedGame sbg) {
-		if (isMoving == true) {
+		if (moving == true) {
 			int battle = (new Random()).nextInt(5999) + 1;
 			if (battle == 6) {
 				music.stop();
@@ -133,18 +133,14 @@ public abstract class Hero extends BattleCharacter {
 			// despawns hitbox after end attack frame
 			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexEndAttackFrame())
 					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexEndAttackFrame())) {
-				getHitboxes().setHurtbox(null);
+				getGeneralBoxes().setHurtbox(null);
 			}
 			// stops attack animation at last frame
 			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexLastFrame())
 					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexLastFrame())) {
 				stopAttack(); // sets isAttacking() to false
 			} else if (isAttacking() == true) {
-				if (getBattleDirection() == 1) {
-					attackLeft();
-				} else {
-					attackRight();
-				}
+				startAttack();
 			} else if (isAttacking() == false && isHit() == false) { // Movement.
 				// Can only
 				// move if
@@ -156,7 +152,7 @@ public abstract class Hero extends BattleCharacter {
 				}
 
 				else if (input.isKeyDown(Input.KEY_A)) {
-					if (getHitboxes().getHitbox().getX() - 10 > 0) {
+					if (getGeneralBoxes().getHitbox().getX() - 10 > 0) {
 						battleMoveLeft(delta);
 						isMoving = true;
 						setBattleDirection(1);
@@ -164,7 +160,7 @@ public abstract class Hero extends BattleCharacter {
 				}
 
 				else if (input.isKeyDown(Input.KEY_D)) {
-					if (getHitboxes().getHitbox().getX() + getHitboxes().getHitbox().getWidth() + 10 < 800) {
+					if (getGeneralBoxes().getHitbox().getX() + getGeneralBoxes().getHitbox().getWidth() + 10 < 800) {
 						battleMoveRight(delta);
 						isMoving = true;
 						setBattleDirection(2);
@@ -183,28 +179,28 @@ public abstract class Hero extends BattleCharacter {
 	public void moveUp(int delta) {
 		setAnimation(movingUp);
 		setyPosOut(getyPosOut() - delta * .125f);
-		isMoving = true;
+		moving = true;
 		direction = 0;
 	}
 
 	public void moveDown(int delta) {
 		setAnimation(movingDown);
 		setyPosOut(getyPosOut() + delta * .125f);
-		isMoving = true;
+		moving = true;
 		direction = 1;
 	}
 
 	public void moveLeft(int delta) {
 		setAnimation(movingLeft);
 		setxPosOut(getxPosOut() - delta * .125f);
-		isMoving = true;
+		moving = true;
 		direction = 2;
 	}
 
 	public void moveRight(int delta) {
 		setAnimation(movingRight);
 		setxPosOut(getxPosOut() + delta * .125f);
-		isMoving = true;
+		moving = true;
 		direction = 3;
 	}
 
@@ -225,7 +221,7 @@ public abstract class Hero extends BattleCharacter {
 	}
 	@Override
 	public void updateHealthbar(GameContainer gc){
-		healthbar.update(105, 520);
+		getHealthbar().update(105, 520);
 	}
 	// getters and setters
 	public void setSpriteSheets(List<SpriteSheet> move, List<SpriteSheet> idle, List<SpriteSheet> attack,

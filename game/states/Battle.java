@@ -66,21 +66,39 @@ public class Battle extends BasicGameState {
 		battleMap.draw(0, 0);
 		g.drawString("HP: ", hero.getHealthbar().getX() - 40, hero.getHealthbar().getY() - 2);
 		hero.render(gc, sbg, g);
+		renderMonsters(gc, sbg, g);
+
+	}
+
+	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		hero.update(gc, sbg, delta);
+		updateMonsters(gc, sbg, delta);
+		hurtboxLogic();
+		if (hero.isAlive() == false) {
+			// TODO flash gameover screen here
+		}
+		if (enemyCount == 0) {
+			sbg.enterState(3, new FadeOutTransition(), new EmptyTransition());
+		}
+
+	}
+	public void updateMonsters(GameContainer gc, StateBasedGame sbg, int delta){
+		for (Monster m : enemies) {
+			m.update(gc, sbg, delta);
+		}
+	}
+	public void renderMonsters(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		for (Monster m : enemies) {
 			m.render(gc, sbg, g);
 		}
 	}
 
-	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		hero.update(gc, sbg, delta);
-		for (Monster m : enemies) {
-			m.update(gc, sbg, delta);
-		}
-
+	public void hurtboxLogic() {
 		if (hero.hurtboxIsSpawned() == true) {
 			for (Monster m : enemies) {
-				if (hero.getHitboxes().getHurtbox().getBounds().intersects(m.getHitboxes().getHitbox().getBounds())
-						&& m.isHit() == false && m.isAlive() == true) {
+				if (hero.getGeneralBoxes().getHurtbox().getBounds()
+						.intersects(m.getGeneralBoxes().getHitbox().getBounds()) && m.isHit() == false
+						&& m.isAlive() == true) {
 					hero.attack(m);
 					if (m.isAlive() == false) {
 						enemyCount--;
@@ -91,19 +109,13 @@ public class Battle extends BasicGameState {
 		}
 		for (Monster m : enemies) {
 			if (m.hurtboxIsSpawned() == true) {
-				if (m.getHitboxes().getHurtbox().getBounds().intersects(hero.getHitboxes().getHitbox().getBounds())
-						&& hero.isHit() == false && hero.isAlive() == true) {
+				if (m.getGeneralBoxes().getHurtbox().getBounds()
+						.intersects(hero.getGeneralBoxes().getHitbox().getBounds()) && hero.isHit() == false
+						&& hero.isAlive() == true) {
 					m.attack(hero);
 				}
 			}
 		}
-		if (hero.isAlive() == false) {
-			// TODO flash gameover screen here
-		}
-		if (enemyCount == 0) {
-			sbg.enterState(3, new FadeOutTransition(), new EmptyTransition());
-		}
-
 	}
 
 	private void addRandomEnemy(int pos) throws SlickException {
@@ -113,6 +125,7 @@ public class Battle extends BasicGameState {
 		m.battleFaceLeft();
 		m.getAnimation().start();
 		m.setxPosBattle(pos);
+		m.setTarget(hero);
 		enemies.add(m);
 	}
 

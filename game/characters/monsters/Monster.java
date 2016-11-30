@@ -1,6 +1,7 @@
 package game.characters.monsters;
 
 import java.util.List;
+import java.util.Random;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.GameContainer;
@@ -12,10 +13,21 @@ import game.characters.*;
 import game.util.Debug;
 
 public abstract class Monster extends BattleCharacter {
-	Boolean isMoving;
+	BattleCharacter target;
+	Boolean attackTarget;
+	Boolean moving;
+
+	public BattleCharacter getTarget() {
+		return target;
+	}
+
+	public void setTarget(BattleCharacter target) {
+		this.target = target;
+	}
 
 	public Monster(BattleCharacterInfo info) {
 		super(info);
+		attackTarget = false;
 		battleFaceLeft();
 	}
 
@@ -33,56 +45,54 @@ public abstract class Monster extends BattleCharacter {
 
 	// controls for hero during battle
 	public void battleInput(GameContainer gc, StateBasedGame sbg, int delta, Input input) {
-		Boolean isMoving = false; // 0 up 1 down 2 left 3 right
-		// sends player back to menu TEMPORARY
-		if (Debug.debugMode == true) {
-			if (input.isKeyDown(Input.KEY_M)) {
-				sbg.enterState(1);
-			}
-			if (input.isKeyDown(Input.KEY_4))
-				;
-		}
+		moving = false; // 0 up 1 down 2 left 3 right
+
 		if (isAlive() == true) {
+			if (attackTarget == false) {
+				if (getGeneralBoxes().getAggressionBoxLeft().getBounds()
+						.intersects(target.getGeneralBoxes().getHitbox().getBounds())) {
+					attackTarget = (new Random().nextInt(10) + 1 == 6);
+				}
+			}
+
 			// despawns hitbox
 			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexEndAttackFrame())
 					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexEndAttackFrame())) {
-				getHitboxes().setHurtbox(null);
+				getGeneralBoxes().setHurtbox(null);
 			}
-
+			if (isHit()) {
+				stopAttack();
+			}
 			// stops attack animation at last frame
 			if (getAnimation().getCurrentFrame() == attackLeft.getImage(info.getIndexLastFrame())
 					|| getAnimation().getCurrentFrame() == attackRight.getImage(info.getIndexLastFrame())) {
 				stopAttack(); // sets isAttacking() to false
+				attackTarget = false;
+				System.out.println("LEL");
 			} else if (isAttacking() == true) {
-				if (getBattleDirection() == 1) {
-					attackLeft();
-				} else {
-					attackRight();
-				}
+				startAttack();
 			} else if (isAttacking() == false && isHit() == false) { // Movement.
 				// Can only
 				// move if
 				// is
 				// not attacking and not hit
-
-				if (input.isKeyPressed(Input.KEY_L)) {
-					startAttack(); // sets isAttacking() to true
+				if (attackTarget == true) {
+					if (getGeneralBoxes().getAttackBox().getBounds()
+							.intersects(target.getGeneralBoxes().getHitbox().getBounds()) == true) {
+						startAttack(); // sets isAttacking() to true
+					} else if (getGeneralBoxes().getAggressionBoxLeft().getBounds()
+							.intersects(target.getGeneralBoxes().getHitbox().getBounds()) == true) {
+						battleMoveLeft(delta);
+						moving = true;
+						setBattleDirection(1);
+					} else if (getGeneralBoxes().getAggressionBoxRight().getBounds()
+							.intersects(target.getGeneralBoxes().getHitbox().getBounds()) == true) {
+						battleMoveRight(delta);
+						moving = true;
+						setBattleDirection(2);
+					}
 				}
-
-				else if (input.isKeyDown(Input.KEY_LEFT)) {
-					battleMoveLeft(delta);
-					isMoving = true;
-					setBattleDirection(1);
-				}
-
-				else if (input.isKeyDown(Input.KEY_RIGHT)) {
-					battleMoveRight(delta);
-					isMoving = true;
-					setBattleDirection(2);
-					;
-				}
-
-				if (isMoving == false) {
+				if (moving == false) {
 					resetIdle();
 				}
 			}

@@ -6,7 +6,7 @@ public class BattleCharacterInfo {
 	private float hurtboxWidth, gapFromCenter;
 	private int healthBarDistance, aggression;
 	private float moveSpeed;
-	private int currentHp, attackRangeBox;
+	private int currentHp; //, attackRangeBox;
 	private float distanceFromTopAttack;
 	private int indexLastFrame, indexStartAttackFrame, indexEndAttackFrame;
 
@@ -26,7 +26,7 @@ public class BattleCharacterInfo {
 		setDistanceFromTop(distanceFromTop);
 		setHealthBarDistance(healthBarDistance);
 		setAggression(aggression * 17);
-		setAttackRangeBox(aggression * 15);
+		//setAttackRangeBox(aggression * 10);
 		setCurrentHp(hp);
 		setMoveSpeed(moveSpeed);
 		setDistanceFromTopAttack(distanceFromTopAttack);
@@ -147,13 +147,13 @@ public class BattleCharacterInfo {
 		this.moveSpeed = moveSpeed2;
 	}
 
-	public int getAttackRangeBox() {
-		return attackRangeBox;
-	}
-
-	public void setAttackRangeBox(int attackRangeBox) {
-		this.attackRangeBox = attackRangeBox;
-	}
+//	public int getAttackRangeBox() {
+//		return attackRangeBox;
+//	}
+//
+//	public void setAttackRangeBox(int attackRangeBox) {
+//		this.attackRangeBox = attackRangeBox;
+//	}
 
 	public float getDistanceFromTopAttack() {
 		return distanceFromTopAttack;

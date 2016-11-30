@@ -13,12 +13,22 @@ import game.characters.BattleCharacterInfo;
 public class Slayer extends Hero {
 	public static final Slayer slayer = new Slayer();
 	/*
-	 * hp = 100 damage = 20 widthBattle = 300 heightBattle = 200 hitboxWidth =
-	 * 30 hitboxHeight = 65 distanceFromTop = 81 hurtboxWidth = 80 gapFromCenter
-	 * = 45 healthBarDistance = 0 aggression = 0 //player controlled moveSpeed =
-	 * 0.2f distanceFromTopAttack = 30 indexOfLastFrame = 4;
-	 * 
-	 * indexLastAttackFrame = 4 indexStartAttackFrame = 2 indexEndAttackFrame = 4
+	 * hp = 100 
+	 * damage = 20 
+	 * widthBattle = 300 
+	 * heightBattle = 200 
+	 * hitboxWidth = 30
+	 * hitboxHeight = 65 
+	 * distanceFromTop = 81 
+	 * hurtboxWidth = 80 
+	 * gapFromCenter = 45 
+	 * healthBarDistance = 0 
+	 * aggression = 0 //player controlled 
+	 * moveSpeed = 0.2f 
+	 * distanceFromTopAttack = 30
+	 * indexOfLastAttackFrame = 4 //last frame of attack animation
+	 * indexStartAttackFrame = 2 
+	 * indexEndAttackFrame = 4 //last frame of hurtbox to spawn
 	 *
 	 */
 
