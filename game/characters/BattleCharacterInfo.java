@@ -9,11 +9,12 @@ public class BattleCharacterInfo {
 	private int currentHp; //, attackRangeBox;
 	private float distanceFromTopAttack;
 	private int indexLastFrame, indexStartAttackFrame, indexEndAttackFrame;
+	private int adjust;
 
 	public BattleCharacterInfo(String name, int hp, int damage, int widthBattle, int heightBattle, int hitboxWidth,
 			int hitboxHeight, int distanceFromTop, float hurtboxWidth, float gapFromCenter, int healthBarDistance,
 			int aggression, float moveSpeed, float distanceFromTopAttack, int indexLastFrame, int indexStartAttackFrame,
-			int indexEndAttackFrame) {
+			int indexEndAttackFrame, int adjust) {
 		setName(name);
 		setMaxHp(hp);
 		setDamage(damage);
@@ -26,13 +27,13 @@ public class BattleCharacterInfo {
 		setDistanceFromTop(distanceFromTop);
 		setHealthBarDistance(healthBarDistance);
 		setAggression(aggression * 17);
-		//setAttackRangeBox(aggression * 10);
 		setCurrentHp(hp);
 		setMoveSpeed(moveSpeed);
 		setDistanceFromTopAttack(distanceFromTopAttack);
 		setIndexLastFrame(indexLastFrame);
 		setIndexStartAttackFrame(indexStartAttackFrame);
 		setIndexEndAttackFrame(indexEndAttackFrame);
+		setAdjust(adjust);
 	}
 
 	public int getDamage() {
@@ -185,6 +186,14 @@ public class BattleCharacterInfo {
 
 	public void setIndexStartAttackFrame(int indexStartAttackFrame) {
 		this.indexStartAttackFrame = indexStartAttackFrame;
+	}
+
+	public int getAdjust() {
+		return adjust;
+	}
+
+	public void setAdjust(int adjust) {
+		this.adjust = adjust;
 	}
 
 }

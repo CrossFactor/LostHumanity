@@ -8,7 +8,7 @@ public class Boxes {
 	private Box hitbox, hurtbox;
 	private Box aggressionBoxLeft, aggressionBoxRight;
 	private Box attackBox;
-	//private Box targetRightBox;
+	private Box targetRightBox;
 
 	public Boxes() {
 	}
@@ -73,16 +73,16 @@ public class Boxes {
 		aggressionBoxRight.draw(g);
 	}
 
-//	public Box getTargetRightBox() {
-//		return targetRightBox;
-//	}
-//
-//	public void setTargetRightBox(Box targetRightBox) {
-//		this.targetRightBox = targetRightBox;
-//	}
-//
-//	public void drawTargetRightBox(Graphics g) {
-//		targetRightBox.draw(g);
-//	}
+	public Box getTargetRightBox() {
+		return targetRightBox;
+	}
+
+	public void setTargetRightBox(Box targetRightBox) {
+		this.targetRightBox = targetRightBox;
+	}
+
+	public void drawTargetRightBox(Graphics g) {
+		targetRightBox.draw(g);
+	}
 
 }

@@ -3,22 +3,28 @@ package game.util;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
+
+import game.characters.BattleCharacter;
+import game.characters.heroes.Hero;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
+
 public class Healthbar {
 	int maxHealth;
-	int currentHealth;
+	float currentHealth;
 	float x;
 	float y;
 	float centerX;
-	int charWidth;
+	BattleCharacter c;
 
-	public Healthbar(int hp, float x, float y, int charWidth) {
-		setMaxHp(hp);
-		setCurrentHp(hp);
-		this.charWidth = charWidth;
+	public Healthbar(int hp, float x, float y, BattleCharacter c) {
+		setMaxHp(hp * 100 / hp);
+		setCurrentHp(maxHealth);
+		this.c = c;
 		setX(x);
 		setY(y);
+
 	}
 
 	public void update(float x, float y) {
@@ -64,8 +70,12 @@ public class Healthbar {
 		this.currentHealth = hp;
 	}
 
-	public int getCurrentHp() {
+	public float getCurrentHp() {
 		return currentHealth;
+	}
+
+	public int adjust(int damage) {
+		return maxHealth * (damage / c.getInfo().getMaxHp());
 	}
 
 	public void draw(Graphics g) throws SlickException {
@@ -74,7 +84,17 @@ public class Healthbar {
 		g.setColor(Color.green);
 		g.fillRect(x, y, currentHealth, 14);
 		g.setColor(Color.black);
-		g.drawString(getCurrentHp() + "/" + getMaxHp(), getX() + 15 , getY() - 2);
+		if (c instanceof Hero) {
+			g.drawString(c.getInfo().getCurrentHp() + "/" + c.getInfo().getMaxHp(), getX() + 15, getY() - 2);
+		}
+		else{ 
+			g.drawString(c.getInfo().getCurrentHp() + "/" + c.getInfo().getMaxHp(), getX() + 25, getY() - 2);
+		}
+	}
+
+	public void takeDamage(int damage) {
+		currentHealth = currentHealth - (maxHealth * ((float) damage / (float) c.getInfo().getMaxHp()));
+		System.out.println(currentHealth);
 	}
 
 }

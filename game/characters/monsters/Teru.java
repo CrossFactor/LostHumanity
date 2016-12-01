@@ -30,16 +30,20 @@ public class Teru extends Monster {
 	 * indexEndAttackFrame = 5 TEMPORARY
 	 */
 	public Teru() {
-		super(new BattleCharacterInfo("teru", 80, 15, 100, 80, 40, 55, 4, 50, 0, 20, 15, 0.15f, 10, 5, 3, 5));
+		super(new BattleCharacterInfo("teru", 80, 15, 100, 80, 40, 55, 4, 50, 0, 20, 15, 0.15f, 10, 5, 3, 5, 0));
 	}
 
 	public void setMonsterSheets() throws SlickException {
-		SpriteSheet idleLeft = new SpriteSheet("res/monsters/teru/idle/idleLeft.png", 100, 80);
-		SpriteSheet idleRight = new SpriteSheet("res/monsters/teru/idle/idleRight.png", 100, 80);
-		SpriteSheet attackLeft = new SpriteSheet("res/monsters/teru/attackMelee/attackLeft.png", 100, 80);
-		SpriteSheet attackRight = new SpriteSheet("res/monsters/teru/attackMelee/attackRight.png", 100, 80);
-		SpriteSheet battleMoveLeft = new SpriteSheet("res/monsters/teru/move/moveLeft.png", 100, 80);
-		SpriteSheet battleMoveRight = new SpriteSheet("res/monsters/teru/move/moveRight.png", 100, 80);
+		int battleWidth = 100;
+		int battleHeight = 80;
+		SpriteSheet idleLeft = new SpriteSheet("res/monsters/teru/idle/idleLeft.png", battleWidth, battleHeight);
+		SpriteSheet idleRight = new SpriteSheet("res/monsters/teru/idle/idleRight.png", battleWidth, battleHeight);
+		SpriteSheet attackLeft = new SpriteSheet("res/monsters/teru/attackMelee/attackLeft.png", battleWidth, battleHeight);
+		SpriteSheet attackRight = new SpriteSheet("res/monsters/teru/attackMelee/attackRight.png", battleWidth, battleHeight);
+		SpriteSheet battleMoveLeft = new SpriteSheet("res/monsters/teru/move/moveLeft.png", battleWidth, battleHeight);
+		SpriteSheet battleMoveRight = new SpriteSheet("res/monsters/teru/move/moveRight.png", battleWidth, battleHeight);
+		SpriteSheet deadLeft = new SpriteSheet("res/monsters/teru/death/deadLeft.png", battleWidth, battleHeight);
+		SpriteSheet deadRight = new SpriteSheet("res/monsters/teru/death/deadRight.png", battleWidth, battleHeight);
 		List<SpriteSheet> idle = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> attack = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> battleMove = new ArrayList<SpriteSheet>();
@@ -61,5 +65,6 @@ public class Teru extends Monster {
 		battleMove.add(battleMoveRight);
 		setSpriteSheets(idle, attack, battleMove);
 		setHitAnimations(hitLeft, hitRight);
+		setDeathAnimations(deadLeft, deadRight);
 	}
 }

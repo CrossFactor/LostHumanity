@@ -23,34 +23,38 @@ public class Rabbit extends Monster {
 	 * gapFromCenter = 0?
 	 * healthbarDistance = 20
 	 * aggression = 10
-	 * moveSpeed = .3f
+	 * moveSpeed = .25f
 	 * distanceFromTopAttack = 30?
-	 * indexLastAttackFrame =  5 TEMP
-	 * indexStartAttackFrame = 2 TEMP
-	 * indexEndAttackFrame = 3 TEMP
+	 * indexLastAttackFrame =  3
+	 * indexStartAttackFrame = 2
+	 * indexEndAttackFrame = 3
 	 */
 	public Rabbit() {
-		super(new BattleCharacterInfo("teru", 40, 10, 100, 80, 40, 55, 4, 10, 0, 20, 10, 0.15f, 30, 2, 2, 3));
+		super(new BattleCharacterInfo("rabbit", 40, 10, 200, 150, 30, 47, 0, 20, 0, 20, 15, 0.25f, 0, 3, 2, 3, 50));
 	}
 	
 	public void setMonsterSheets() throws SlickException{
-		SpriteSheet idleLeft = new SpriteSheet("res/monsters/teru/idle/idleLeft.png", 100, 80);
-		SpriteSheet idleRight = new SpriteSheet("res/monsters/teru/idle/idleRight.png", 100, 80);
-		SpriteSheet attackLeft = new SpriteSheet("res/monsters/teru/attackMelee/attackLeft.png", 100, 80);
-		SpriteSheet attackRight = new SpriteSheet("res/monsters/teru/attackMelee/attackRight.png", 100, 80);
-		SpriteSheet battleMoveLeft = new SpriteSheet("res/monsters/teru/move/moveLeft.png", 100, 80);
-		SpriteSheet battleMoveRight = new SpriteSheet("res/monsters/teru/move/moveRight.png", 100, 80);
+		int battleWidth = 200;
+		int battleHeight = 150;
+		SpriteSheet idleLeft = new SpriteSheet("res/monsters/rabbit/idle/idleLeft.png", battleWidth, battleHeight);
+		SpriteSheet idleRight = new SpriteSheet("res/monsters/rabbit/idle/idleRight.png", battleWidth, battleHeight);
+		SpriteSheet attackLeft = new SpriteSheet("res/monsters/rabbit/attackMelee/attackLeft.png", battleWidth, battleHeight);
+		SpriteSheet attackRight = new SpriteSheet("res/monsters/rabbit/attackMelee/attackRight.png", battleWidth, battleHeight);
+		SpriteSheet battleMoveLeft = new SpriteSheet("res/monsters/rabbit/move/moveLeft.png", battleWidth, battleHeight);
+		SpriteSheet battleMoveRight = new SpriteSheet("res/monsters/rabbit/move/moveRight.png", battleWidth, battleHeight);
+		SpriteSheet deadLeft = new SpriteSheet("res/monsters/rabbit/death/deadLeft.png", battleWidth, battleHeight);
+		SpriteSheet deadRight = new SpriteSheet("res/monsters/rabbit/death/deadRight.png", battleWidth, battleHeight);
 		List<SpriteSheet> idle = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> attack = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> battleMove = new ArrayList<SpriteSheet>();
-		Image[] hitLeftImages = { new Image("res/monsters/teru/attackMelee/hitLeft.png"),
-				new Image("res/monsters/teru/attackMelee/hitLeft.png"),
-				new Image("res/monsters/teru/attackMelee/hitLeft.png"),
-				new Image("res/monsters/teru/attackMelee/hitLeft.png") };
-		Image[] hitRightImages = { new Image("res/monsters/teru/attackMelee/hitRight.png"),
-				new Image("res/monsters/teru/attackMelee/hitRight.png"),
-				new Image("res/monsters/teru/attackMelee/hitRight.png"),
-				new Image("res/monsters/teru/attackMelee/hitRight.png") };
+		Image[] hitLeftImages = { new Image("res/monsters/rabbit/attackMelee/hitLeft.png"),
+				new Image("res/monsters/rabbit/attackMelee/hitLeft.png"),
+				new Image("res/monsters/rabbit/attackMelee/hitLeft.png"),
+				new Image("res/monsters/rabbit/attackMelee/hitLeft.png") };
+		Image[] hitRightImages = { new Image("res/monsters/rabbit/attackMelee/hitRight.png"),
+				new Image("res/monsters/rabbit/attackMelee/hitRight.png"),
+				new Image("res/monsters/rabbit/attackMelee/hitRight.png"),
+				new Image("res/monsters/rabbit/attackMelee/hitRight.png") };
 		Animation hitLeft = new Animation(hitLeftImages, 500, true);
 		Animation hitRight = new Animation(hitRightImages, 500, true);
 		idle.add(idleLeft);
@@ -61,5 +65,6 @@ public class Rabbit extends Monster {
 		battleMove.add(battleMoveRight);
 		setSpriteSheets(idle, attack, battleMove);
 		setHitAnimations(hitLeft, hitRight);
+		setDeathAnimations(deadLeft, deadRight);
 	}
 }

@@ -12,6 +12,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import game.util.Debug;
 import game.util.Healthbar;
+import game.characters.heroes.Hero;
 import game.util.Box;
 import game.util.Boxes;
 
@@ -29,8 +30,10 @@ public abstract class BattleCharacter {
 	protected Animation attackLeft, attackRight;
 	private Animation battleMoveLeft, battleMoveRight;
 	protected Animation hitLeft, hitRight;
+	protected Animation deadLeft, deadRight;
+	protected Animation hitEffect;
 
-	private float xPosBattle = 400;
+	private float xPosBattle;
 	private float yPosBattle = 400;
 
 	private Boxes generalBoxes;
@@ -51,7 +54,7 @@ public abstract class BattleCharacter {
 		setMonsterBoxes();
 
 		setHealthbar(new Healthbar(info.getMaxHp(), getCenterX() - (info.getMaxHp() / 2),
-				yPosBattle - info.getHealthBarDistance(), info.getWidthBattle()));
+				yPosBattle - info.getHealthBarDistance(), this));
 	}
 
 	private void setMonsterBoxes() {
@@ -65,13 +68,13 @@ public abstract class BattleCharacter {
 			// attack boxes set monster to attack if hero hitbox intersects it
 			generalBoxes.setAttackBox(new Box(getCenterX() - info.getHurtboxWidth(),
 					yPosBattle + info.getDistanceFromTop(), info.getHurtboxWidth() * 2, info.getHitboxHeight()));
-			//TODO generalBoxes.setTargetRightBox(new Box(getCenterX(), getCenterY() - 2, 800, 4));
+			generalBoxes.setTargetRightBox(new Box(getCenterX(), 0, 800, 600));
 		}
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		getAnimation().draw(getxPosBattle(), getyPosBattle());
-		drawHealthbar(g);
+		getAnimation().draw(getxPosBattle(), getyPosBattle() - info.getAdjust());
+		drawHealthbar(g, this);
 		if (Debug.debugMode == true) {
 			g.setColor(Color.green);
 			generalBoxes.drawHitbox(g);
@@ -87,10 +90,10 @@ public abstract class BattleCharacter {
 				g.setColor(Color.red);
 				generalBoxes.drawHurtbox(g);
 			}
-//			if (generalBoxes.getTargetRightBox() != null) {
-//				g.setColor(Color.pink);
-//				generalBoxes.drawTargetRightBox(g);
-//			}
+			if (generalBoxes.getTargetRightBox() != null) {
+				g.setColor(Color.pink);
+				generalBoxes.drawTargetRightBox(g);
+			}
 		}
 	}
 
@@ -100,18 +103,20 @@ public abstract class BattleCharacter {
 
 		generalBoxes.getHitbox().update(getCenterX() - (info.getHitboxWidth() / 2),
 				yPosBattle + info.getDistanceFromTop());
-
-		battle(gc, sbg, delta); // calls battle method of each
-
-		hitCd += delta * cdIncrement; // cooldown after getting hit
-		updateRecover();
+		if (alive) {
+			battle(gc, sbg, delta); // calls battle method of each
+			hitCd += delta * cdIncrement; // cooldown after getting hit
+			updateRecover();
+		} else {
+			animateDeath();
+		}
 
 		if (generalBoxes.getAggressionBoxLeft() != null && generalBoxes.getAggressionBoxRight() != null) {
 			generalBoxes.getAggressionBoxLeft().update((getCenterX() - (info.getAggression())), yPosBattle);
 			generalBoxes.getAggressionBoxRight().update(getCenterX(), yPosBattle);
 			generalBoxes.getAttackBox().update(getCenterX() - info.getHurtboxWidth(),
 					yPosBattle + info.getDistanceFromTop());
-			//TODO generalBoxes.getTargetRightBox().update(getCenterX(), getCenterY() - 2);
+			generalBoxes.getTargetRightBox().update(getCenterX(), 0);
 		}
 	}
 
@@ -136,6 +141,11 @@ public abstract class BattleCharacter {
 	public void hit() {
 		isHit = true;
 		setCdIncrement(.1f);
+		if (battleDirection == 1) {
+			getsHitLeft();
+		} else {
+			getsHitRight();
+		}
 	}
 
 	public void resetIdle() {
@@ -155,22 +165,13 @@ public abstract class BattleCharacter {
 
 	public void attack(BattleCharacter c) {
 		c.takeDamage(this.info.getDamage());
-		c.getsHit();
-	}
-
-	private void getsHit() {
-		if (getBattleDirection() == 1) {
-			getsHitLeft();
-		} else {
-			getsHitRight();
-		}
-		hit();
+		c.hit();
 	}
 
 	public void takeDamage(int damage) {
 		if (isHit == false) {
 			this.info.setCurrentHp(this.info.getCurrentHp() - damage);
-			this.healthbar.setCurrentHp(this.info.getCurrentHp());
+			this.healthbar.takeDamage(damage);
 			if (info.getCurrentHp() <= 0) {
 				kill();
 			}
@@ -179,6 +180,22 @@ public abstract class BattleCharacter {
 
 	public Boolean isAlive() {
 		return alive;
+	}
+
+	public void animateDeath() {
+		animation.stop();
+		generalBoxes.setHurtbox(null);
+		if (battleDirection == 1) {
+			setAnimation(deadLeft);
+		} else {
+			setAnimation(deadRight);
+		}
+		if (animation.getCurrentFrame().equals(deadLeft.getImage(4))
+				|| animation.getCurrentFrame().equals(deadRight.getImage(4))) {
+			animation.stop();
+		} else {
+			animation.start();
+		}
 	}
 
 	public void kill() {
@@ -197,10 +214,9 @@ public abstract class BattleCharacter {
 
 	public void startAttack() {
 		animation.stop();
-		if(battleDirection == 1){
+		if (battleDirection == 1) {
 			attackLeft();
-		}
-		else {
+		} else {
 			attackRight();
 		}
 		animation.start();
@@ -218,7 +234,6 @@ public abstract class BattleCharacter {
 	}
 
 	public void attackLeft() {
-		//setAnimation(battleDirection == 1 ? attackLeft : attackRight);
 		setAnimation(attackLeft);
 		spawnHurtboxLeft();
 	}
@@ -268,8 +283,8 @@ public abstract class BattleCharacter {
 				|| (generalBoxes.getHitbox().getX() + generalBoxes.getHitbox().getWidth() + 1 < 600);
 	}
 
-	public void drawHealthbar(Graphics g) throws SlickException {
-		if (alive) {
+	public void drawHealthbar(Graphics g, BattleCharacter c) throws SlickException {
+		if (alive || c instanceof Hero) {
 			healthbar.draw(g);
 		}
 	}
@@ -405,5 +420,21 @@ public abstract class BattleCharacter {
 
 	public void setgeneralBoxes(Boxes generalBoxes) {
 		this.generalBoxes = generalBoxes;
+	}
+
+	public Animation getDeadLeft() {
+		return deadLeft;
+	}
+
+	public void setDeadLeft(Animation deadLeft) {
+		this.deadLeft = deadLeft;
+	}
+
+	public Animation getDeadRight() {
+		return deadRight;
+	}
+
+	public void setDeadRight(Animation deadRight) {
+		this.deadRight = deadRight;
 	}
 }

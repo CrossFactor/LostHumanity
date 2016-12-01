@@ -1,6 +1,9 @@
 package game.states;
 
+import java.io.Serializable;
+
 import org.lwjgl.input.Mouse;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -9,6 +12,7 @@ import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
@@ -16,9 +20,16 @@ import game.characters.heroes.Hero;
 import game.characters.heroes.Slayer;
 import game.util.Debug;
 
-public class Play extends BasicGameState {
+public class Play extends BasicGameState implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Image worldMap;
 	Image worldMapWalls;
+	Image map1, map2, map3, map4;
+	Image map1Walls, map2Walls, map3Walls, map4Walls;
+	Image blankFloor;
 	boolean quit = false;
 	int direction = 1;
 	int area = 1;
@@ -32,12 +43,6 @@ public class Play extends BasicGameState {
 	public Play(int state) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.newdawn.slick.state.BasicGameState#enter(org.newdawn.slick.
-	 * GameContainer, org.newdawn.slick.state.StateBasedGame)
-	 */
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
@@ -62,8 +67,11 @@ public class Play extends BasicGameState {
 		} else if (hero instanceof Slayer) {
 			((Slayer) hero).setHeroSprites();
 		}
-		worldMap = new Image("res/backgrounds/whole map/floor.png");
-		worldMapWalls = new Image("res/backgrounds/whole map/walls.png");
+		map2 = new Image("res/backgrounds/levels/level2/floor.png");
+		map2Walls = new Image("res/backgrounds/levels/level2/wall.png");
+		blankFloor = new Image("res/backgrounds/blankTrans.png");
+		worldMap = map2;
+		worldMapWalls = map2Walls;
 		hero.faceDown();
 	}
 
@@ -92,11 +100,23 @@ public class Play extends BasicGameState {
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
 		hero.getAnimation().update(delta);
-		hero.moveOut(gc, sbg, delta, input, worldMapWalls);
-		hero.findBattle(music, sbg);
-
+		hero.moveOut(gc, sbg, delta, input, worldMapWalls, mapX, mapY);
+		findBattle(sbg);
 		mapLogic();
-
+		if (Debug.debugMode) {
+			if (input.isKeyDown(Input.KEY_UP)) {
+				mapY -= 1;
+			}
+			if (input.isKeyDown(Input.KEY_DOWN)) {
+				mapY += 1;
+			}
+			if (input.isKeyDown(Input.KEY_LEFT)) {
+				mapX -= 1;
+			}
+			if (input.isKeyDown(Input.KEY_RIGHT)) {
+				mapX += 1;
+			}
+		}
 		if (input.isKeyDown(Input.KEY_ESCAPE)) {
 			quit = true;
 		}
@@ -117,6 +137,13 @@ public class Play extends BasicGameState {
 		}
 	}
 
+	public void findBattle(StateBasedGame sbg) {
+		if (hero.findBattle()) {
+			Battle.playMusic();
+			sbg.enterState(4, new FadeOutTransition(Color.white, 1000), new FadeInTransition(Color.white, 500));
+		}
+	}
+
 	public void mapLogic() {
 		switch (stage) {
 		case 1:
@@ -126,35 +153,26 @@ public class Play extends BasicGameState {
 	}
 
 	public void stageOne() {
-		switch (area) {
-		case 1:
-			mapX = 0;
-			mapY = 0;
-			if (hero.getyPosOut() >= 457 && (hero.getxPosOut() > 368 && hero.getxPosOut() < 382)) {
-				area++;
-				hero.setyPosOut(6);
-			}
-			break;
-		case 2:
-			mapX = 0;
-			mapY = -600;
-			if (hero.getxPosOut() >= 692 && (hero.getyPosOut() > 215 && hero.getyPosOut() < 235)) {
-				area++;
-				hero.setxPosOut(64);
-			}
-			break;
-		case 3:
-			mapX = -800;
-			mapY = -600;
-			if (hero.getyPosOut() >= 457 && (hero.getxPosOut() > 368 && hero.getxPosOut() < 382)) {
-				area++;
-				hero.setyPosOut(6);
-			}
-			break;
-		case 4:
+		// if (input.isKeyDown(Input.KEY_W)) { // 206
+		// Color c = worldMapWalls.getColor((int) xPosOut + 22, (int) yPosOut +
+		// 65);
+		// Boolean noCollision = c.a == 0f;
+		// if (noCollision) {
+		// moveUp(delta);
+		// }
+		// }
+		if (hero.getyPosOut() + 75 < 0) { // up
+			hero.setyPosOut(600 - (hero.getHeightOut() - 1));
+			mapY += 600;
+		}
+		if (hero.getyPosOut() + 65 > 600) { // down
+			hero.setyPosOut(-40);
+			mapY -= 600;
+		}
+		if (hero.getxPosOut() + 6 < 0) { // left
+			hero.setxPosOut(0);
 			mapX = -800;
 			mapY = -1200;
-			break;
 		}
 	}
 
