@@ -5,74 +5,61 @@ import org.newdawn.slick.state.*;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
+import game.util.Songs;
+import game.util.Sounds;
+import game.Game;
+
 public class Menu extends BasicGameState {
-	int selection;
-	Image menu;
-	Image menuLoad;
-	Image menuNG;
-	Image menuQuit;
-	Music music;
-	Sound select;
-	Music arrow;
+	private int selection;
+	private Image[] menu;
 
 	public Menu(int state) {
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		music = new Music("sounds/one/mainMenuMusic.ogg");
-		select = new Sound("sounds/one/selectMenu.wav");
-		menuNG = new Image("res/menu/menuNG.png");
-		menuQuit = new Image("res/menu/menuQuit.png");
-		menuLoad = new Image("res/menu/menuLoad.png");
-		menu = menuLoad;
+		menu = new Image[] { new Image("res/menu/menuLoad.png"), new Image("res/menu/menuNG.png"),
+				new Image("res/menu/menuCredits.png"), new Image("res/menu/menuQuit.png") };
 		selection = 0;
 	}
 
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
-		music.loop();
+		Songs.menuBgm();
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		g.drawImage(menu, 0, 0);
+		menu[selection].draw(0, 0);
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
-		if (input.isKeyPressed(Input.KEY_DOWN)) {
-			select.play();
-			if (selection < 2) {
+		if (input.isKeyPressed(Input.KEY_DOWN) || input.isKeyPressed(Input.KEY_S)) {
+			Sounds.selectSound();
+			if (selection < 3) {
 				selection++;
 			}
 		}
-		if (input.isKeyPressed(Input.KEY_UP)) {
-			select.play();
+		if (input.isKeyPressed(Input.KEY_UP) || input.isKeyPressed(Input.KEY_W)) {
+			Sounds.selectSound();
 			if (selection > 0) {
 				selection--;
 			}
 		}
-		switch (selection) {
-		case 0:
-			menu = menuLoad;
-			break;
-		case 1:
-			menu = menuNG;
-			break;
-		case 2:
-			menu = menuQuit;
-			break;
-		}
-		if (input.isKeyPressed(Input.KEY_ENTER)) {
-			select.play();
-			music.stop();
+		if (input.isKeyPressed(Input.KEY_ENTER) || input.isKeyPressed(Input.KEY_K)) {
+			Sounds.bellSound();
 			switch (selection) {
 			case 0:
 				break;
 			case 1:
-				sbg.enterState(3, new FadeOutTransition(), new FadeInTransition());
+				Songs.playSceneOneBgm();
+				Songs.pause();
+				sbg.enterState(Game.scene1, new FadeOutTransition(Color.white, 1000), new FadeInTransition(Color.white, 10000));
 				break;
 			case 2:
+				sbg.enterState(Game.credits, new FadeOutTransition(), new FadeInTransition());
+				break;
+			case 3:
 				System.exit(0);
 				break;
 			}

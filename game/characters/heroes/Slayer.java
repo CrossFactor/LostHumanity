@@ -11,11 +11,9 @@ import org.newdawn.slick.SpriteSheet;
 import game.characters.BattleCharacterInfo;
 
 public class Slayer extends Hero {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2L;
 	public static final Slayer slayer = new Slayer();
+	
 	/*
 	 * hp = 100 
 	 * damage = 20 
@@ -62,14 +60,20 @@ public class Slayer extends Hero {
 		List<SpriteSheet> idle = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> attack = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> battleMove = new ArrayList<SpriteSheet>();
-		Image[] hitLeftImages = { new Image("res/slayer/attack/hitLeft.png"),
-				new Image("res/slayer/attack/hitLeft.png"), new Image("res/slayer/attack/hitLeft.png"),
-				new Image("res/slayer/attack/hitLeft.png") };
-		Image[] hitRightImages = { new Image("res/slayer/attack/hitRight.png"),
-				new Image("res/slayer/attack/hitRight.png"), new Image("res/slayer/attack/hitRight.png"),
-				new Image("res/slayer/attack/hitRight.png") };
+		
+		Image[] jumpLeftImages = { new Image("res/slayer/attack/jumpLeft.png")};
+		Image[] jumpRightImages = { new Image("res/slayer/attack/jumpRight.png")};
+		Animation jumpLeft = new Animation(jumpLeftImages, 500, true);
+		Animation jumpRight = new Animation(jumpRightImages, 500, true);
+		Image[] hitLeftImages = { new Image("res/slayer/attack/hitLeft.png")};
+		Image[] hitRightImages = { new Image("res/slayer/attack/hitRight.png")};
 		Animation hitLeft = new Animation(hitLeftImages, 500, true);
 		Animation hitRight = new Animation(hitRightImages, 500, true);
+		Image[] blockLeftImages = { new Image("res/slayer/attack/blockLeft.png")};
+		Image[] blockRightImages = { new Image("res/slayer/attack/blockRight.png")};
+		Animation blockLeft = new Animation(blockLeftImages, 500, true);
+		Animation blockRight = new Animation(blockRightImages, 500, true);
+		
 		move.add(moveUp);
 		move.add(moveDown);
 		move.add(moveLeft);
@@ -84,5 +88,7 @@ public class Slayer extends Hero {
 		setHitAnimations(hitLeft, hitRight);
 		setDeathAnimations(deadLeft, deadRight);
 		setBattleFoundStance(battleFoundStance);
+		setJumpAnimations(jumpLeft, jumpRight);
+		setBlockAnimations(blockLeft, blockRight);
 	}
 }

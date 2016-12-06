@@ -6,20 +6,15 @@ import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
+import game.util.Sounds;
+
 public class Opening extends BasicGameState {
-	Image op;
-	Music music;
-	Sound select;
-	Music arrow;
-	static Sound sound;
+	private Image op;
+	private Music music;
+	private static Sound sound;
 	private float pan, zoom = 1;
 	
 	private float y = 0, ctr = 0, x = 0;
-	
-	public static void playSound() throws SlickException{
-		sound = new Sound("sounds/two/Bell.wav.wav");
-		sound.play();
-	}
 	
 	public Opening(int state) {
 	}
@@ -43,7 +38,7 @@ public class Opening extends BasicGameState {
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
 		if(input.isKeyPressed(Input.KEY_ENTER)){
-			playSound();
+			Sounds.bellSound();
 			sbg.enterState(2, new FadeOutTransition(), new FadeInTransition());
 		}
 		if(y < (float) -1200.0){

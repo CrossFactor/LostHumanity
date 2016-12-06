@@ -15,6 +15,7 @@ public abstract class Monster extends BattleCharacter {
 	BattleCharacter target;
 	Boolean attackTarget;
 	Boolean moving;
+	private Boolean hitSomething = false;
 
 	public BattleCharacter getTarget() {
 		return target;
@@ -48,13 +49,14 @@ public abstract class Monster extends BattleCharacter {
 		if (isAlive() == true) {
 			if (attackTarget == false) {
 				if (aggressionBoxesIntersectTargetHitbox()) {
-					attackTarget = (new Random().nextInt(999) + 1 == 6);
+					attackTarget = (new Random().nextInt(799) + 1 == 6);
 				}
 			}
 
 			// despawns hitbox
 			if (currentFrameIsEndFrame()) {
 				getGeneralBoxes().setHurtbox(null);
+				setHitSomething(false);
 			}
 			if (isHit()) {
 				stopAttack();
@@ -73,7 +75,7 @@ public abstract class Monster extends BattleCharacter {
 				// is
 				// not attacking and not hit
 				if (attackTarget == true) {
-					if (targetIsInAttackRange()) {
+					if (targetIsInAttackRange() && isOnCooldown() == false) {
 						startAttack(); // sets isAttacking() to true
 					} else if (getGeneralBoxes().getTargetRightBox().getBounds()
 							.intersects(target.getGeneralBoxes().getHitbox().getBounds()) == false) {
@@ -132,4 +134,12 @@ public abstract class Monster extends BattleCharacter {
 	}
 
 	public abstract void setMonsterSheets() throws SlickException;
+
+	public Boolean getHitSomething() {
+		return hitSomething;
+	}
+
+	public void setHitSomething(Boolean hitSomething) {
+		this.hitSomething = hitSomething;
+	}
 }

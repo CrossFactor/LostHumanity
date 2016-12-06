@@ -12,17 +12,17 @@ import game.characters.BattleCharacterInfo;
 
 public class Rabbit extends Monster {
 	/*
-	 * hp = 40
+	 * hp = 60
 	 * damage = 10
 	 * widthBattle = 200
 	 * heightBattle = 150
-	 * hitboxWidth = 30
-	 * hitboxHeight = 47
+	 * hitboxWidth = 45
+	 * hitboxHeight = 50
 	 * distanceFromTop = 4
 	 * hurtboxWidth = 10?
 	 * gapFromCenter = 0?
 	 * healthbarDistance = 20
-	 * aggression = 10
+	 * aggression = 30
 	 * moveSpeed = .25f
 	 * distanceFromTopAttack = 30?
 	 * indexLastAttackFrame =  3
@@ -30,7 +30,7 @@ public class Rabbit extends Monster {
 	 * indexEndAttackFrame = 3
 	 */
 	public Rabbit() {
-		super(new BattleCharacterInfo("rabbit", 40, 10, 200, 150, 30, 47, 0, 20, 0, 20, 15, 0.25f, 0, 3, 2, 3, 50));
+		super(new BattleCharacterInfo("rabbit", 60, 10, 200, 150, 45, 50, 0, 40, 0, 20, 30, 0.25f, 0, 3, 2, 3, 50));
 	}
 	
 	public void setMonsterSheets() throws SlickException{

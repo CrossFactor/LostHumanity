@@ -21,7 +21,7 @@ public abstract class BattleCharacter {
 
 	private int battleDirection = 2;
 
-	private Boolean isOnCooldown = false;
+	private Boolean cooldown = false;
 	private Boolean attacking = false;
 	private Boolean isHit = false;
 	private Boolean hurtboxSpawned = false;
@@ -32,7 +32,6 @@ public abstract class BattleCharacter {
 	protected Animation hitLeft, hitRight;
 	protected Animation deadLeft, deadRight;
 	protected Animation hitEffect;
-
 	private float xPosBattle;
 	private float yPosBattle = 400;
 
@@ -41,10 +40,13 @@ public abstract class BattleCharacter {
 	private float hurtboxX;
 
 	private Boolean alive = true;
+	private float attackCd, attackCdIncrement = 0;
 	private float hitCd, cdIncrement = 0;
-
+	
+	//abstraction
 	public abstract void battle(GameContainer gc, StateBasedGame sbg, int delta);
-
+	
+	//
 	public BattleCharacter(BattleCharacterInfo info) {
 		this.info = info;
 		generalBoxes = new Boxes();
@@ -52,9 +54,14 @@ public abstract class BattleCharacter {
 				yPosBattle + info.getDistanceFromTop(), info.getHitboxWidth(), info.getHitboxHeight()));
 
 		setMonsterBoxes();
-
 		setHealthbar(new Healthbar(info.getMaxHp(), getCenterX() - (info.getMaxHp() / 2),
 				yPosBattle - info.getHealthBarDistance(), this));
+	}
+
+	public void contructHitEffect() throws SlickException {
+		SpriteSheet hitEffectSheet = new SpriteSheet("res/effects/hitEffect.png", 100, 100);
+		setHitEffect(new Animation(hitEffectSheet, 100));
+
 	}
 
 	private void setMonsterBoxes() {
@@ -75,6 +82,7 @@ public abstract class BattleCharacter {
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		getAnimation().draw(getxPosBattle(), getyPosBattle() - info.getAdjust());
 		drawHealthbar(g, this);
+		hitEffectLogic();
 		if (Debug.debugMode == true) {
 			g.setColor(Color.green);
 			generalBoxes.drawHitbox(g);
@@ -105,8 +113,8 @@ public abstract class BattleCharacter {
 				yPosBattle + info.getDistanceFromTop());
 		if (alive) {
 			battle(gc, sbg, delta); // calls battle method of each
-			hitCd += delta * cdIncrement; // cooldown after getting hit
-			updateRecover();
+			updateHitRecover(delta);
+			updateAttackRecover(delta);
 		} else {
 			animateDeath();
 		}
@@ -121,12 +129,35 @@ public abstract class BattleCharacter {
 	}
 
 	// functionality
-	public void updateRecover() {
+	public void updateHitRecover(int delta) {
 		if (isHit()) {
+			hitCd += delta * cdIncrement; // cooldown after getting hit
 			if (getHitCd() > 49) {
 				hitRecover();
 				setHitCd(0);
 			}
+		}
+	}
+
+	public void updateAttackRecover(int delta) {
+		if (isOnCooldown()) {
+			attackCd += delta * attackCdIncrement;
+			if (getAttackCd() > 89) {
+				offCooldown();
+				setAttackCd(0);
+			}
+		}
+	}
+	public void drawHitEffect() {
+		hitEffect.draw(getCenterX() - (100 / 2), yPosBattle + info.getDistanceFromTop());
+	}
+	private void hitEffectLogic() {
+		if (isHit()) {
+			drawHitEffect();
+			hitEffect.start();
+		}
+		if (hitEffect.getCurrentFrame().equals(hitEffect.getImage(7))) {
+			hitEffect.stop();
 		}
 	}
 
@@ -160,6 +191,9 @@ public abstract class BattleCharacter {
 	public void hitRecover() {
 		isHit = false;
 		setCdIncrement(0f);
+		hitEffect.restart();
+		hitLeft.restart();
+		hitRight.restart();
 		resetIdle();
 	}
 
@@ -213,6 +247,8 @@ public abstract class BattleCharacter {
 	}
 
 	public void startAttack() {
+		onCooldown();
+		setAttackCdIncrement(.1f);
 		animation.stop();
 		if (battleDirection == 1) {
 			attackLeft();
@@ -225,6 +261,9 @@ public abstract class BattleCharacter {
 
 	public void stopAttack() {
 		attacking = false;
+		setCdIncrement(0f);
+		attackLeft.restart();
+		attackRight.restart();
 		setHurtboxSpawned(false);
 		resetIdle();
 	}
@@ -278,7 +317,7 @@ public abstract class BattleCharacter {
 		}
 	}
 
-	private boolean inMapBounds() {
+	protected boolean inMapBounds() {
 		return generalBoxes.getHitbox().getX() - 1 > 0
 				|| (generalBoxes.getHitbox().getX() + generalBoxes.getHitbox().getWidth() + 1 < 600);
 	}
@@ -331,6 +370,14 @@ public abstract class BattleCharacter {
 		this.animation = animation;
 	}
 
+	public Animation getHitEffect() {
+		return hitEffect;
+	}
+
+	public void setHitEffect(Animation hitEffect) {
+		this.hitEffect = hitEffect;
+	}
+
 	public float getCenterX() {
 		return xPosBattle + (info.getWidthBattle() / 2.0f);
 	}
@@ -344,15 +391,15 @@ public abstract class BattleCharacter {
 	}
 
 	public Boolean isOnCooldown() {
-		return isOnCooldown;
+		return cooldown;
 	}
 
 	public void offCooldown() {
-		isOnCooldown = false;
+		cooldown = false;
 	}
 
 	public void onCooldown() {
-		isOnCooldown = true;
+		cooldown = true;
 	}
 
 	public void getsHitLeft() {
@@ -436,5 +483,21 @@ public abstract class BattleCharacter {
 
 	public void setDeadRight(Animation deadRight) {
 		this.deadRight = deadRight;
+	}
+
+	public float getAttackCd() {
+		return attackCd;
+	}
+
+	public void setAttackCd(float attackCd) {
+		this.attackCd = attackCd;
+	}
+
+	public float getAttackCdIncrement() {
+		return attackCdIncrement;
+	}
+
+	public void setAttackCdIncrement(float attackCdIncrement) {
+		this.attackCdIncrement = attackCdIncrement;
 	}
 }

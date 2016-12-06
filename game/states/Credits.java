@@ -1,52 +1,59 @@
 package game.states;
 
-import org.newdawn.slick.Animation;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
-import game.util.Sounds;
+import game.Game;
+import game.util.Songs;
 
-public class Opening2 extends BasicGameState {
-	private Image menu;
-	private Animation enter;
+public class Credits extends BasicGameState {
+	Image[] credits;
+	private int event = 0;
 
-	public Opening2(int state) {
+	public Credits(int state) {
 	}
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		menu = new Image("res/menu/menunu.png");
-		SpriteSheet enterSheet = new SpriteSheet("res/menu/pressEnter.png", 250, 100);
-		enter = new Animation(enterSheet, 1000);
-		enter.setPingPong(true);
+		credits = new Image[] { new Image("res/credits/credits1.png"), new Image("res/credits/credits2.png"),
+				new Image("res/credits/credits3.png") };
+	}
+
+	@Override
+	public void enter(GameContainer container, StateBasedGame sbg) throws SlickException {
+		super.enter(container, sbg);
+		Songs.creditsBgm();
+		event = 0;
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		menu.draw(0, 0);
-		enter.draw(400 - (250 / 2), 400);
+		credits[event].draw(0, 0);
 	}
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
 		if (input.isKeyPressed(Input.KEY_ENTER)) {
-			sbg.enterState(2, new FadeOutTransition(), new FadeInTransition());
-			Sounds.bellSound();
+			if (event < 2) {
+				event++;
+			}
+			else {
+				sbg.enterState(Game.menu, new FadeOutTransition(), new FadeInTransition());
+			}
 		}
 	}
 
 	@Override
 	public int getID() {
-		return 1;
+		return 5;
 	}
 
 }

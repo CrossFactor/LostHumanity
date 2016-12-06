@@ -8,22 +8,31 @@ import org.newdawn.slick.state.*;
 import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
-import org.newdawn.slick.state.transition.SelectTransition;
 
 import game.characters.heroes.*;
 import game.characters.monsters.Monster;
 import game.characters.monsters.Rabbit;
 import game.characters.monsters.Teru;
+import game.Game;
 import game.util.Healthbar;
+import game.util.Songs;
+import game.util.Sounds;
 
 public class Battle extends BasicGameState {
 	Hero hero = Slayer.slayer;
-	Image battleMap;
-	static Music music;
-	Sound hitSound;
-	static final int DEFAULT_ENEMYCOUNT = 0;
-	int enemyCount = 0;
-	Vector<Monster> enemies;
+	private Image[] battleMap;
+	private Image gameOver;
+	private Animation victory;
+	private int selection = 0;
+	private static final int DEFAULT_ENEMYCOUNT = 0;
+	private int enemyCount = 0;
+	private Vector<Monster> enemies;
+	private float gameOverY = -400;
+	private float victoryY = -601;
+	private Long time = 0L;
+	private Boolean playGOMusic = true;
+	private Boolean drawHeroHitEffectBlock = false;
+	private Boolean playVicMusic = true;
 
 	public Battle(int state) {
 	}
@@ -31,12 +40,16 @@ public class Battle extends BasicGameState {
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
+		hero.setBattleSelection(0);
+		time = 0L;
+		selection = 0;
 		hero.getAnimation().stop();
 		hero.stopAttack();
 		hero.battleFaceRight();
 		int enemyCount = new Random().nextInt(2) + 1;
 		this.enemyCount = enemyCount;
-
+		playGOMusic = true;
+		playVicMusic = true;
 		enemies = new Vector<Monster>();
 		int pos = 500;
 		for (int i = 0; i < enemyCount; i++) {
@@ -46,7 +59,6 @@ public class Battle extends BasicGameState {
 
 		hero.reset();
 		hero.getAnimation().start();
-		// sound.play();
 	}
 
 	@Override
@@ -58,35 +70,71 @@ public class Battle extends BasicGameState {
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		music = new Music("sounds/one/back3.ogg");
-		hitSound = new Sound("sounds/one/impact1.wav");
-		battleMap = new Image("res/backgrounds800x600/2.png");
-		hero.setHealthbar(new Healthbar(hero.getInfo().getMaxHp(), 30, 500, hero));
+		battleMap = new Image[] { new Image("res/backgrounds/battle/background.png"),
+				new Image("res/backgrounds/battle/bbBlock.png"), new Image("res/backgrounds/battle/bbPotion0.png"),
+				new Image("res/backgrounds/battle/bbPotion1.png"), new Image("res/backgrounds/battle/bbPotion2.png"),
+				new Image("res/backgrounds/battle/bbPotion3.png") };
+		gameOver = new Image("res/battle/gameOver.png");
+		SpriteSheet vectory = new SpriteSheet("res/battle/victory.png", 800, 600);
+		victory = new Animation(vectory, 300);
+		hero.contructHitEffect();
 		hero.battleFaceRight();
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		battleMap.draw(0, 0);
-		g.drawString("HP: ", hero.getHealthbar().getX() - 40, hero.getHealthbar().getY() - 2);
+		if (selection < 2) {
+			battleMap[selection].draw(0, 0);
+		} else {
+			battleMap[selection + hero.getPotions()].draw(0, 0);
+		}
+		if(drawHeroHitEffectBlock){
+			hero.drawHitEffect();
+			drawHeroHitEffectBlock = false;
+		}
+		g.setColor(Color.black);
+		// g.drawString("HP: ", hero.getHealthbar().getX() - 40,
+		// hero.getHealthbar().getY() - 2);
 		renderMonsters(gc, sbg, g);
 		hero.render(gc, sbg, g);
+		hero.getStaminabar().draw(g);
+		if (hero.isAlive() == false) {
+			gameOver.draw(0, gameOverY);
+		}
+		if (enemyCount == 0) {
+			victory.draw(0, 0);
+		}
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		Input input = gc.getInput();
+		this.selection = hero.getBattleSelection();
 		hero.update(gc, sbg, delta);
 		updateMonsters(gc, sbg, delta);
 		hurtboxLogic();
 		if (hero.isAlive() == false) {
-			// TODO flash gameover screen here
+			if (playGOMusic) {
+				Songs.gameOverBgm();
+				playGOMusic = false;
+			}
+			if (gameOverY <= 0) {
+				gameOverY += delta * 0.08f;
+			}
+			if (time >= 15000) {
+				sbg.enterState(Game.menu, new FadeOutTransition(), new FadeInTransition());
+			}
+			time += delta;
 		}
 		if (enemyCount == 0) {
-			sbg.enterState(3, new FadeOutTransition(), new EmptyTransition());
+			victory.update(delta);
+			if (playVicMusic) {
+				Songs.victoryBgm();
+				playVicMusic = false;
+			}
+			if (time >= 10000) {
+				sbg.enterState(Game.play, new FadeOutTransition(), new FadeInTransition());
+			}
+			time += delta;
 		}
-
-	}
-
-	public static void playMusic() {
-		music.loop();
 	}
 
 	public void updateMonsters(GameContainer gc, StateBasedGame sbg, int delta) {
@@ -101,7 +149,7 @@ public class Battle extends BasicGameState {
 		}
 	}
 
-	public void hurtboxLogic() {
+	public void hurtboxLogic() throws SlickException {
 		if (hero.hurtboxIsSpawned() == true) {
 			for (Monster m : enemies) {
 				if (hero.getGeneralBoxes().getHurtbox().getBounds()
@@ -111,16 +159,27 @@ public class Battle extends BasicGameState {
 					if (m.isAlive() == false) {
 						enemyCount--;
 					}
-					hitSound.play();
+					Sounds.hitSound();
 				}
 			}
 		}
 		for (Monster m : enemies) {
 			if (m.hurtboxIsSpawned() == true) {
-				if (m.getGeneralBoxes().getHurtbox().getBounds()
+				if (hero.isBlocking() && m.getGeneralBoxes().getHurtbox().getBounds()
+						.intersects(hero.getGeneralBoxes().getHitbox().getBounds())
+						&& hero.isAlive() == true && m.getHitSomething() == false && hero.getStamina() > 0) { //logic for if hero is blocking
+					m.setHitSomething(true);
+					hero.useStamina(m.getInfo().getDamage()); // stamina taken from hero on block is the damage of the enemy
+					drawHeroHitEffectBlock = true;
+					
+				} 
+				else if (m.getHitSomething() == true) {
+					// do Nothing
+				}else if (m.getGeneralBoxes().getHurtbox().getBounds()
 						.intersects(hero.getGeneralBoxes().getHitbox().getBounds()) && hero.isHit() == false
-						&& hero.isAlive() == true && hero.isHit() == false) {
+						&& hero.isAlive() == true) {
 					m.attack(hero);
+					Sounds.hitSound();
 				}
 			}
 		}
@@ -136,6 +195,7 @@ public class Battle extends BasicGameState {
 		m.setxPosBattle(pos);
 		m.updateHealthbar(gc);
 		m.setTarget(hero);
+		m.contructHitEffect();
 		enemies.add(m);
 	}
 

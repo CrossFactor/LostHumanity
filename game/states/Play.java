@@ -16,29 +16,42 @@ import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
+import game.Game;
 import game.characters.heroes.Hero;
 import game.characters.heroes.Slayer;
 import game.util.Debug;
+import game.util.Songs;
 
 public class Play extends BasicGameState implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	Image worldMap;
-	Image worldMapWalls;
-	Image map1, map2, map3, map4;
-	Image map1Walls, map2Walls, map3Walls, map4Walls;
+	Image[] map;
+	Image[] mapWalls;
+	Image[] mapTrans;
+	Image[] mapSpawn;
 	Image blankFloor;
-	boolean quit = false;
+	static Boolean initMap = true;
 	int direction = 1;
-	int area = 1;
-	int stage = 1;
-	int mapX = 0;
-	int mapY = 0;
-	String job = "slayer";
+	static int level = 1;
+	static int scene = 0;
+	float mapX = 0;
+	float mapY = 0;
+	float shiftX = 0;
+	float shiftY = 0;
+	float heroX = 0;
+	float heroY = 0;
 	Hero hero = Slayer.slayer;
-	Music music;
+
+	public static void nextLevel() {
+		level++;
+		initMap = true;
+	}
+
+	public static void nextScene() {
+		scene++;
+	}
 
 	public Play(int state) {
 	}
@@ -47,19 +60,16 @@ public class Play extends BasicGameState implements Serializable {
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
 		hero.faceDown();
-		// sound.play();
-		music.loop();
+		Songs.playBgm();
 		hero.faceDown();
 	}
 
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		super.leave(container, game);
-		quit = false;
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {// tiledmap
-		music = new Music("sounds/one/bgm1.ogg");
 		if (hero instanceof Slayer) {
 			((Slayer) hero).setHeroSprites();
 		} else if (hero instanceof Slayer) {
@@ -67,113 +77,89 @@ public class Play extends BasicGameState implements Serializable {
 		} else if (hero instanceof Slayer) {
 			((Slayer) hero).setHeroSprites();
 		}
-		map2 = new Image("res/backgrounds/levels/level2/floor.png");
-		map2Walls = new Image("res/backgrounds/levels/level2/wall.png");
-		blankFloor = new Image("res/backgrounds/blankTrans.png");
-		worldMap = map2;
-		worldMapWalls = map2Walls;
+		mapX = hero.getxPosOut() + 400;
+		mapY = hero.getyPosOut() + 300;
+		map = new Image[] { new Image("res/backgrounds/levels/level1/floor.png"),
+				new Image("res/backgrounds/levels/level2/floor.png"),
+				new Image("res/backgrounds/levels/level3/floor.png"),
+				new Image("res/backgrounds/levels/level4/floor.png") };
+		mapWalls = new Image[] { new Image("res/backgrounds/levels/level1/wall.png"),
+				new Image("res/backgrounds/levels/level2/wall.png"),
+				new Image("res/backgrounds/levels/level3/wall.png"),
+				new Image("res/backgrounds/levels/level4/wall.png") };
+		mapTrans = new Image[] { new Image("res/backgrounds/levels/level1/transition.png"),
+				new Image("res/backgrounds/levels/level2/transition.png"),
+				new Image("res/backgrounds/levels/level3/transition.png"),
+				new Image("res/backgrounds/levels/level4/transition.png") };
+		mapSpawn = new Image[] { new Image("res/backgrounds/levels/level1/spawn.png"),
+				new Image("res/backgrounds/levels/level2/spawn.png"),
+				new Image("res/backgrounds/levels/level3/spawn.png"),
+				new Image("res/backgrounds/levels/level4/spawn.png") };
 		hero.faceDown();
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		worldMap.draw(mapX, mapY);
-		worldMapWalls.draw(mapX, mapY);
-		hero.getAnimation().draw(hero.getxPosOut(), hero.getyPosOut());
+		map[level].draw(mapX, mapY);
+		mapWalls[level].draw(mapX, mapY);
+		hero.getAnimation().draw(heroX, heroY);
 		if (Debug.debugMode == true) {
 			g.drawString("X:" + hero.getxPosOut() + "\nY:" + hero.getyPosOut(), 10, 100);
 			g.drawString("mapX:" + mapX + "\nmapY:" + mapY, 10, 200);
 			g.drawString("Direction: " + direction, 10, 150);
-			g.drawString("MouseX:" + Mouse.getX() + "\nMouseY:" + Mouse.getY(), 10, 250);
-			g.drawString("Area: " + area, 10, 300);
-		}
-
-		if (quit == true) {
-			g.drawString("Resume (R)", 250, 100);
-			g.drawString("Main Menu (M)", 250, 150);
-			g.drawString("Quit Game (Q)", 250, 200);
-			if (quit == false) {
-				g.clear();
-			}
+			g.drawString("MouseX:" + Mouse.getX() + "\nMouseY:" + (600 - Mouse.getY()), 10, 250);
 		}
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
+		heroX = 400 - (hero.getWidthOut() / 2);
+		heroY = 300 - (hero.getHeightOut() / 2);
+		mapX = -(hero.getxPosOut())- (hero.getWidthOut() / 2) + 400;
+		mapY = -(hero.getyPosOut()) - (hero.getHeightOut() / 2) + 300;
 		hero.getAnimation().update(delta);
-		hero.moveOut(gc, sbg, delta, input, worldMapWalls, mapX, mapY);
+		hero.moveOut(gc, sbg, delta, input, mapWalls[level], mapTrans[level]);
 		findBattle(sbg);
-		mapLogic();
+		mapLogic();                           
 		if (Debug.debugMode) {
-			if (input.isKeyDown(Input.KEY_UP)) {
-				mapY -= 1;
-			}
-			if (input.isKeyDown(Input.KEY_DOWN)) {
-				mapY += 1;
-			}
-			if (input.isKeyDown(Input.KEY_LEFT)) {
-				mapX -= 1;
-			}
-			if (input.isKeyDown(Input.KEY_RIGHT)) {
-				mapX += 1;
-			}
-		}
-		if (input.isKeyDown(Input.KEY_ESCAPE)) {
-			quit = true;
-		}
-
-		if (quit == true) {
-			if (input.isKeyDown(Input.KEY_R)) {
-				quit = false;
-			}
-			if (input.isKeyDown(Input.KEY_M)) {
-				sbg.enterState(2, new FadeOutTransition(), new FadeInTransition());
-			}
-			if (input.isKeyDown(Input.KEY_Q)) {
-				System.exit(0);
-			}
-			if (input.isKeyDown(Input.KEY_E)) {
+			if (input.isKeyDown(Input.KEY_B)) {
 				sbg.enterState(4);
 			}
 		}
+		if (input.isKeyPressed(Input.KEY_ESCAPE)) {
+			sbg.enterState(Game.pause);
+		}
 	}
 
-	public void findBattle(StateBasedGame sbg) {
+	public void findBattle(StateBasedGame sbg) throws SlickException {
 		if (hero.findBattle()) {
-			Battle.playMusic();
+			Songs.battleBgm();
 			sbg.enterState(4, new FadeOutTransition(Color.white, 1000), new FadeInTransition(Color.white, 500));
 		}
 	}
 
 	public void mapLogic() {
-		switch (stage) {
-		case 1:
-			stageOne();
-			break;
+		if (initMap) {
+			initMaps();
 		}
+
 	}
 
-	public void stageOne() {
-		// if (input.isKeyDown(Input.KEY_W)) { // 206
-		// Color c = worldMapWalls.getColor((int) xPosOut + 22, (int) yPosOut +
-		// 65);
-		// Boolean noCollision = c.a == 0f;
-		// if (noCollision) {
-		// moveUp(delta);
-		// }
-		// }
-		if (hero.getyPosOut() + 75 < 0) { // up
-			hero.setyPosOut(600 - (hero.getHeightOut() - 1));
-			mapY += 600;
+	public void initMaps() {
+		mapX = 0;
+		mapY = 0;
+		for (int y = 0; y <= 600; y++) {
+			for (int x = 0; x <= 800; x++) { // Change this once we implement
+												// spawns other than (0, 0)
+												// coordinates for map
+				Color c = mapSpawn[level].getColor(x, y);
+				Boolean spawnPointHere = c.a != 0f;
+				if (spawnPointHere) {
+					hero.setxPosOut(x - 20);
+					hero.setyPosOut(y - 70);
+				}
+			}
 		}
-		if (hero.getyPosOut() + 65 > 600) { // down
-			hero.setyPosOut(-40);
-			mapY -= 600;
-		}
-		if (hero.getxPosOut() + 6 < 0) { // left
-			hero.setxPosOut(0);
-			mapX = -800;
-			mapY = -1200;
-		}
+		initMap = false;
 	}
 
 	public int getID() {

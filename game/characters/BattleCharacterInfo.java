@@ -33,7 +33,7 @@ public class BattleCharacterInfo {
 		setIndexLastFrame(indexLastFrame);
 		setIndexStartAttackFrame(indexStartAttackFrame);
 		setIndexEndAttackFrame(indexEndAttackFrame);
-		setAdjust(adjust);
+		setAdjust(adjust); //adjust adjusts the yPosition in case y pos doesn't center
 	}
 
 	public int getDamage() {

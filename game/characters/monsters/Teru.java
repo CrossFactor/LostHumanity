@@ -22,7 +22,7 @@ public class Teru extends Monster {
 	 * hurtboxWidth = 50?
 	 * gapFromCenter = 0? 
 	 * healthbarDistance = 20
-	 * aggression = 10 
+	 * aggression = 20
 	 * moveSpeed = .15f
 	 * distanceFromTopAttack = 10 //distance from top of height to the top of hurtbox 
 	 * indexLastAttackFrame = 5 TEMPORARY 
@@ -30,7 +30,7 @@ public class Teru extends Monster {
 	 * indexEndAttackFrame = 5 TEMPORARY
 	 */
 	public Teru() {
-		super(new BattleCharacterInfo("teru", 80, 15, 100, 80, 40, 55, 4, 50, 0, 20, 15, 0.15f, 10, 5, 3, 5, 0));
+		super(new BattleCharacterInfo("teru", 80, 15, 100, 80, 40, 55, 4, 50, 0, 20, 20, 0.15f, 10, 5, 3, 5, 0));
 	}
 
 	public void setMonsterSheets() throws SlickException {
@@ -44,6 +44,7 @@ public class Teru extends Monster {
 		SpriteSheet battleMoveRight = new SpriteSheet("res/monsters/teru/move/moveRight.png", battleWidth, battleHeight);
 		SpriteSheet deadLeft = new SpriteSheet("res/monsters/teru/death/deadLeft.png", battleWidth, battleHeight);
 		SpriteSheet deadRight = new SpriteSheet("res/monsters/teru/death/deadRight.png", battleWidth, battleHeight);
+		
 		List<SpriteSheet> idle = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> attack = new ArrayList<SpriteSheet>();
 		List<SpriteSheet> battleMove = new ArrayList<SpriteSheet>();
